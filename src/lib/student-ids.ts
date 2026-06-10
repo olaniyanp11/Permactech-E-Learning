@@ -27,6 +27,14 @@ export function isStudentIdAllowed(
   return allowedIds.some((id) => id.toLowerCase() === normalized);
 }
 
+export function getMissingStudentIds(
+  allowedIds: string[],
+  submittedIds: string[]
+): string[] {
+  const submitted = new Set(submittedIds.map((id) => id.toLowerCase()));
+  return allowedIds.filter((id) => !submitted.has(id.toLowerCase()));
+}
+
 export function generateStudentIdRange(
   prefix: string,
   start: number,

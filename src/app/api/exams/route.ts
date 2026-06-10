@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { createExam, getAllExams } from "@/lib/db/repository";
+import { createExam, getAllExams, getSubmissionCountsByExam } from "@/lib/db/repository";
 import { generateId, normalizeTimestamp } from "@/lib/utils";
 import type { Exam } from "@/types";
 
@@ -10,8 +10,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const exams = await getAllExams();
-  return NextResponse.json(exams);
+  const [exams, submissionCounts] = await Promise.all([
+    getAllExams(),
+    getSubmissionCountsByExam(),
+  ]);
+
+  return NextResponse.json(
+    exams.map((exam) => ({
+      ...exam,
+      submissionCount: submissionCounts[exam.id] ?? 0,
+    }))
+  );
 }
 
 export async function POST(request: NextRequest) {

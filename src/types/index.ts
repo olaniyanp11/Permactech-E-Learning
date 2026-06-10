@@ -23,6 +23,7 @@ export interface Exam {
   allowedStudentIds: string[] | null;
   createdAt: string;
   updatedAt: string;
+  submissionCount?: number;
 }
 
 export interface DeviceInfo {

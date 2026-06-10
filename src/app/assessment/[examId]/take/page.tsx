@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import {
@@ -18,6 +18,7 @@ import {
   loadAnswersLocally,
   saveAnswersLocally,
 } from "@/lib/fingerprint";
+import { useExamLeaveGuard } from "@/lib/use-exam-leave-guard";
 import type { Question } from "@/types";
 
 interface ExamSession {
@@ -42,7 +43,10 @@ export default function TakeExamPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
   const [error, setError] = useState("");
+  const submitInFlight = useRef(false);
+  const autoSubmitRef = useRef(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("teacheros_session");
@@ -100,6 +104,7 @@ export default function TakeExamPage() {
 
   const handleAnswerChange = useCallback(
     (questionId: string, value: string) => {
+      if (submitInFlight.current || timedOut) return;
       setAnswers((prev) => {
         const next = { ...prev, [questionId]: value };
         if (session) {
@@ -108,11 +113,12 @@ export default function TakeExamPage() {
         return next;
       });
     },
-    [examId, session]
+    [examId, session, timedOut]
   );
 
   const handleSubmit = useCallback(async () => {
-    if (!session) return;
+    if (!session || submitInFlight.current) return;
+    submitInFlight.current = true;
     setSubmitting(true);
     setError("");
 
@@ -141,13 +147,14 @@ export default function TakeExamPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        submitInFlight.current = false;
         if (data.duplicate) {
           setError(data.message);
         } else {
           setError(data.error ?? "Submission failed");
         }
         setSubmitting(false);
-        setShowSubmitModal(false);
+        if (!autoSubmitRef.current) setShowSubmitModal(false);
         return;
       }
 
@@ -168,14 +175,21 @@ export default function TakeExamPage() {
       sessionStorage.removeItem("teacheros_session");
       router.push("/assessment/confirmation");
     } catch {
+      submitInFlight.current = false;
       setError("Network error. Your answers are saved locally.");
       setSubmitting(false);
     }
   }, [session, answers, examId, router]);
 
   const handleTimeUp = useCallback(() => {
+    autoSubmitRef.current = true;
+    setTimedOut(true);
     setShowSubmitModal(true);
-  }, []);
+    handleSubmit();
+  }, [handleSubmit]);
+
+  const examActive = Boolean(session && questions.length > 0 && !submitting && !timedOut);
+  const { returnedFromOtherTab, dismissTabWarning } = useExamLeaveGuard({ active: examActive });
 
   if (!session || questions.length === 0) {
     return (
@@ -187,6 +201,7 @@ export default function TakeExamPage() {
 
   const currentQuestion = questions[currentIndex];
   const answeredCount = questions.filter((q) => answers[q.id]?.trim()).length;
+  const locked = submitting || timedOut;
 
   return (
     <div className="min-h-screen bg-background">
@@ -206,6 +221,28 @@ export default function TakeExamPage() {
       </header>
 
       <main className="mx-auto max-w-4xl px-4 py-6 md:px-6">
+        {returnedFromOtherTab && (
+          <div
+            className="mb-6 flex items-start justify-between gap-3 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning"
+            role="alert"
+          >
+            <div className="flex items-start gap-2">
+              <IconAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <p>
+                You left this tab during the exam. Your timer kept running and your answers
+                are still saved — stay on this page until you submit.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={dismissTabWarning}
+              className="shrink-0 text-xs underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {session.instructions && currentIndex === 0 && (
           <Card className="mb-6 border-primary/20 bg-accent/50" padding="md">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -239,6 +276,7 @@ export default function TakeExamPage() {
             value={answers[currentQuestion.id] ?? ""}
             onChange={(v) => handleAnswerChange(currentQuestion.id, v)}
             index={currentIndex}
+            disabled={locked}
           />
         </Card>
 
@@ -254,43 +292,56 @@ export default function TakeExamPage() {
         <div className="flex justify-between gap-3">
           <Button
             variant="ghost"
-            disabled={currentIndex === 0}
+            disabled={locked || currentIndex === 0}
             onClick={() => setCurrentIndex((i) => i - 1)}
           >
             ← Previous
           </Button>
           {currentIndex < questions.length - 1 ? (
-            <Button onClick={() => setCurrentIndex((i) => i + 1)}>
+            <Button disabled={locked} onClick={() => setCurrentIndex((i) => i + 1)}>
               Next →
             </Button>
           ) : (
-            <Button onClick={() => setShowSubmitModal(true)}>
+            <Button disabled={locked} onClick={() => setShowSubmitModal(true)}>
               Submit Assessment
             </Button>
           )}
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Answers auto-save as you type
+          Answers auto-save as you type. Do not close or refresh this tab during the exam.
         </p>
       </main>
 
       <Modal
         open={showSubmitModal}
         onClose={() => !submitting && setShowSubmitModal(false)}
-        title="Submit Assessment?"
-        confirmLabel={submitting ? "Submitting..." : "Confirm Submit"}
-        onConfirm={handleSubmit}
+        title={timedOut ? "Time Is Up" : "Submit Assessment?"}
+        confirmLabel={submitting ? "Submitting..." : timedOut ? undefined : "Confirm Submit"}
+        onConfirm={timedOut ? undefined : handleSubmit}
         loading={submitting}
+        disableClose={timedOut}
       >
-        <p>
-          You have answered {answeredCount} of {questions.length} questions.
-          Once submitted, you cannot change your answers.
-        </p>
-        {answeredCount < questions.length && (
-          <p className="mt-2 text-warning">
-            Warning: {questions.length - answeredCount} question(s) remain unanswered.
+        {timedOut ? (
+          <p>
+            Your time has expired. Your assessment is being submitted automatically
+            {answeredCount < questions.length
+              ? ` with ${answeredCount} of ${questions.length} questions answered`
+              : ""}
+            .
           </p>
+        ) : (
+          <>
+            <p>
+              You have answered {answeredCount} of {questions.length} questions.
+              Once submitted, you cannot change your answers.
+            </p>
+            {answeredCount < questions.length && (
+              <p className="mt-2 text-warning">
+                Warning: {questions.length - answeredCount} question(s) remain unanswered.
+              </p>
+            )}
+          </>
         )}
       </Modal>
     </div>

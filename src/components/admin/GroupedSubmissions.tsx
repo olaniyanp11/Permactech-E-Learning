@@ -3,6 +3,7 @@ import { IconDownload } from "@tabler/icons-react";
 import { SubmissionsTable } from "@/components/admin/SubmissionsTable";
 import { Button } from "@/components/ui/Button";
 import { rankSubmissions } from "@/lib/scoring";
+import { getMissingStudentIds } from "@/lib/student-ids";
 import type { Exam, Submission } from "@/types";
 
 export interface SubmissionGroup {
@@ -52,6 +53,13 @@ export function GroupedSubmissions({
           rankSubmissions(submissions).map((s) => [s.id, s.rank])
         );
         const sorted = sortGroupSubmissions(submissions, showRank, ranks);
+        const submittedIds = submissions
+          .filter((s) => s.status === "submitted")
+          .map((s) => s.studentId);
+        const missingIds =
+          exam?.allowedStudentIds?.length
+            ? getMissingStudentIds(exam.allowedStudentIds, submittedIds)
+            : [];
 
         return (
           <section key={examId} className="space-y-3">
@@ -60,6 +68,9 @@ export function GroupedSubmissions({
                 <h2 className="text-base font-medium">{exam?.title ?? "Unknown exam"}</h2>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {submissions.length} submission{submissions.length === 1 ? "" : "s"}
+                  {exam?.allowedStudentIds?.length
+                    ? ` · ${submittedIds.length} / ${exam.allowedStudentIds.length} on allowlist`
+                    : ""}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -82,6 +93,16 @@ export function GroupedSubmissions({
                 </Button>
               </div>
             </div>
+            {missingIds.length > 0 && (
+              <div className="rounded-xl border border-warning/30 bg-warning/5 px-4 py-3">
+                <p className="text-xs font-medium text-warning">
+                  {missingIds.length} student{missingIds.length === 1 ? "" : "s"} not yet submitted
+                </p>
+                <p className="mt-2 font-mono text-xs text-muted-foreground">
+                  {missingIds.join(", ")}
+                </p>
+              </div>
+            )}
             <SubmissionsTable
               submissions={sorted}
               showDevice={showDevice}

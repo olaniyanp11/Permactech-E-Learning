@@ -219,6 +219,20 @@ export async function getSubmittedSubmissions(examId?: string): Promise<Submissi
   return rows.map(mapSubmission);
 }
 
+export async function getSubmissionCountsByExam(): Promise<Record<string, number>> {
+  const db = getDb();
+  const rows = await db
+    .select({
+      examId: submissions.examId,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(submissions)
+    .where(eq(submissions.status, "submitted"))
+    .groupBy(submissions.examId);
+
+  return Object.fromEntries(rows.map((row) => [row.examId, row.count]));
+}
+
 export async function getDashboardData() {
   const [allExams, allSubmissions] = await Promise.all([
     getAllExams(),

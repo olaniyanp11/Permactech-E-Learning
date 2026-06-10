@@ -9,6 +9,7 @@ interface QuestionRendererProps {
   value: string;
   onChange: (value: string) => void;
   index: number;
+  disabled?: boolean;
 }
 
 export function QuestionRenderer({
@@ -16,6 +17,7 @@ export function QuestionRenderer({
   value,
   onChange,
   index,
+  disabled = false,
 }: QuestionRendererProps) {
   return (
     <div className="space-y-5">
@@ -47,6 +49,7 @@ export function QuestionRenderer({
                 value={option}
                 checked={value === option}
                 onChange={() => onChange(option)}
+                disabled={disabled}
                 className="h-4 w-4 accent-[var(--primary)]"
               />
               {option}
@@ -74,6 +77,7 @@ export function QuestionRenderer({
                 value={opt}
                 checked={value === opt}
                 onChange={() => onChange(opt)}
+                disabled={disabled}
                 className="h-4 w-4 accent-[var(--primary)]"
               />
               {opt}
@@ -88,6 +92,7 @@ export function QuestionRenderer({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type your answer here..."
+          disabled={disabled}
         />
       )}
     </div>

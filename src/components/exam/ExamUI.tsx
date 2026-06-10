@@ -27,11 +27,15 @@ export function ExamTimer({ durationMinutes, startedAt, endsAt, onTimeUp }: Exam
     const windowEndMs = endsAt ? parseTimestamp(endsAt)?.getTime() ?? null : null;
     const effectiveEndMs =
       windowEndMs != null ? Math.min(durationEndMs, windowEndMs) : durationEndMs;
+    let fired = false;
 
     const tick = () => {
       const left = Math.max(0, Math.floor((effectiveEndMs - Date.now()) / 1000));
       setRemaining(left);
-      if (left === 0) onTimeUp();
+      if (left === 0 && !fired) {
+        fired = true;
+        onTimeUp();
+      }
     };
     tick();
     const id = setInterval(tick, 1000);

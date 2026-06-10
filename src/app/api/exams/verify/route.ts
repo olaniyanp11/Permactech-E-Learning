@@ -5,10 +5,25 @@ import {
   findStudentDuplicate,
 } from "@/lib/db/repository";
 import { getExamAvailability } from "@/lib/exam-availability";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { isStudentIdAllowed, normalizeStudentId } from "@/lib/student-ids";
+
+const VERIFY_LIMIT = 30;
+const VERIFY_WINDOW_MS = 60_000;
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`verify:${ip}`, VERIFY_LIMIT, VERIFY_WINDOW_MS);
+    if (!rateLimit.ok) {
+      return NextResponse.json(
+        {
+          error: `Too many attempts. Please wait ${rateLimit.retryAfterSec} seconds and try again.`,
+        },
+        { status: 429 }
+      );
+    }
+
     const { password, studentId } = await request.json();
     const exam = await findActiveExamByPassword(password);
 
