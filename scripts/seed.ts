@@ -1,53 +1,48 @@
 import { config } from "dotenv";
-import fs from "fs";
-import path from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { admins, exams, questions, submissions } from "../src/lib/db/schema";
-import type { Database } from "../src/types";
+import { buildAdmin, seedExams, seedQuestions } from "./seed-data";
 
 config({ path: ".env.local" });
 
 async function seed() {
   const url = process.env.DATABASE_URL;
   if (!url) {
-    console.error("DATABASE_URL is required");
+    console.error("DATABASE_URL is required. Copy .env.local.example to .env.local");
     process.exit(1);
   }
-
-  const seedPath = path.join(process.cwd(), "data", "db.json");
-  const raw = fs.readFileSync(seedPath, "utf-8");
-  const data = JSON.parse(raw) as Database;
 
   const client = postgres(url, { max: 1 });
   const db = drizzle(client);
 
-  console.log("Seeding database...");
-
+  console.log("Clearing existing data...");
   await db.delete(submissions);
   await db.delete(questions);
   await db.delete(exams);
   await db.delete(admins);
 
-  if (data.admins.length > 0) {
-    await db.insert(admins).values(data.admins);
-  }
+  const admin = await buildAdmin();
 
-  if (data.exams.length > 0) {
-    await db.insert(exams).values(data.exams);
-  }
+  console.log("Inserting admin...");
+  await db.insert(admins).values(admin);
 
-  if (data.questions.length > 0) {
-    await db.insert(questions).values(data.questions);
-  }
+  console.log(`Inserting ${seedExams.length} exam(s)...`);
+  await db.insert(exams).values(seedExams);
 
-  if (data.submissions.length > 0) {
-    await db.insert(submissions).values(data.submissions);
-  }
+  console.log(`Inserting ${seedQuestions.length} question(s)...`);
+  await db.insert(questions).values(seedQuestions);
 
-  console.log(
-    `Seeded ${data.admins.length} admins, ${data.exams.length} exams, ${data.questions.length} questions, ${data.submissions.length} submissions`
-  );
+  const totalPoints = seedQuestions.reduce((sum, q) => sum + q.points, 0);
+
+  console.log("\nSeed complete.");
+  console.log("─────────────────────────────────────────");
+  console.log(`  Admin:     ${admin.email} / admin123`);
+  console.log(`  Exam:      ${seedExams[0].title}`);
+  console.log(`  Password:  ${seedExams[0].password}`);
+  console.log(`  Questions: ${seedQuestions.length} (HTML structure only)`);
+  console.log(`  Max score: ${totalPoints} points`);
+  console.log("─────────────────────────────────────────");
 
   await client.end();
 }

@@ -1,0 +1,249 @@
+import type { Exam, Question } from "../src/types";
+
+const EXAM_ID = "exam-html-structure";
+
+export const htmlStructureExam: Exam = {
+  id: EXAM_ID,
+  title: "HTML Elements & Document Structure",
+  instructions:
+    "This assessment covers HTML tags, elements, and basic document structure. " +
+    "Read each question carefully. You have 30 minutes. " +
+    "Multiple choice and true/false questions are auto-graded.",
+  password: "HTML2026",
+  durationMinutes: 30,
+  isActive: true,
+  createdAt: "2026-06-01T08:00:00.000Z",
+  updatedAt: "2026-06-01T08:00:00.000Z",
+};
+
+export { EXAM_ID };
+
+export const htmlStructureQuestions: Question[] = [
+  // ── Document structure ──────────────────────────────────────────────
+  {
+    id: "html-q-01",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "What is the root element of every HTML document?",
+    options: ["<body>", "<html>", "<head>", "<document>"],
+    correctAnswer: "<html>",
+    points: 2,
+    order: 1,
+  },
+  {
+    id: "html-q-02",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "Every HTML5 document should begin with <!DOCTYPE html>.",
+    correctAnswer: "true",
+    points: 1,
+    order: 2,
+  },
+  {
+    id: "html-q-03",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element contains metadata about the page (title, charset, linked stylesheets)?",
+    options: ["<body>", "<meta>", "<head>", "<header>"],
+    correctAnswer: "<head>",
+    points: 2,
+    order: 3,
+  },
+  {
+    id: "html-q-04",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element wraps all visible content shown in the browser window?",
+    options: ["<main>", "<body>", "<section>", "<content>"],
+    correctAnswer: "<body>",
+    points: 2,
+    order: 4,
+  },
+  {
+    id: "html-q-05",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "Content inside the <head> element is displayed directly on the web page.",
+    correctAnswer: "false",
+    points: 1,
+    order: 5,
+  },
+
+  // ── Text & headings ─────────────────────────────────────────────────
+  {
+    id: "html-q-06",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which tag defines the most important (largest) heading on a page?",
+    options: ["<h6>", "<h1>", "<head>", "<title>"],
+    correctAnswer: "<h1>",
+    points: 2,
+    order: 6,
+  },
+  {
+    id: "html-q-07",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element is used to define a paragraph of text?",
+    options: ["<text>", "<para>", "<p>", "<span>"],
+    correctAnswer: "<p>",
+    points: 1,
+    order: 7,
+  },
+  {
+    id: "html-q-08",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which tag inserts a horizontal rule (thematic break) on a page?",
+    options: ["<br>", "<line>", "<hr>", "<rule>"],
+    correctAnswer: "<hr>",
+    points: 1,
+    order: 8,
+  },
+
+  // ── Links, images & media ───────────────────────────────────────────
+  {
+    id: "html-q-09",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element creates a hyperlink to another page or resource?",
+    options: ["<link>", "<a>", "<href>", "<url>"],
+    correctAnswer: "<a>",
+    points: 2,
+    order: 9,
+  },
+  {
+    id: "html-q-10",
+    examId: EXAM_ID,
+    type: "short_answer",
+    text: "What is the name of the attribute on an <a> tag that specifies the URL destination?",
+    correctAnswer: "href",
+    points: 2,
+    order: 10,
+  },
+  {
+    id: "html-q-11",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element embeds an image into an HTML page?",
+    options: ["<picture>", "<img>", "<image>", "<src>"],
+    correctAnswer: "<img>",
+    points: 2,
+    order: 11,
+  },
+  {
+    id: "html-q-12",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "The <img> element is a void (self-closing) element with no closing tag.",
+    correctAnswer: "true",
+    points: 1,
+    order: 12,
+  },
+
+  // ── Lists ───────────────────────────────────────────────────────────
+  {
+    id: "html-q-13",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element defines an unordered (bulleted) list?",
+    options: ["<ol>", "<ul>", "<li>", "<list>"],
+    correctAnswer: "<ul>",
+    points: 2,
+    order: 13,
+  },
+  {
+    id: "html-q-14",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element defines a single item inside a list?",
+    options: ["<item>", "<ul>", "<li>", "<dt>"],
+    correctAnswer: "<li>",
+    points: 1,
+    order: 14,
+  },
+
+  // ── Semantic layout ─────────────────────────────────────────────────
+  {
+    id: "html-q-15",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which semantic element represents the primary content of the page?",
+    options: ["<section>", "<main>", "<article>", "<div>"],
+    correctAnswer: "<main>",
+    points: 2,
+    order: 15,
+  },
+  {
+    id: "html-q-16",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element is used to define a block of navigation links?",
+    options: ["<menu>", "<nav>", "<links>", "<header>"],
+    correctAnswer: "<nav>",
+    points: 2,
+    order: 16,
+  },
+  {
+    id: "html-q-17",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element typically contains introductory content or site branding at the top of a page?",
+    options: ["<top>", "<header>", "<head>", "<banner>"],
+    correctAnswer: "<header>",
+    points: 1,
+    order: 17,
+  },
+  {
+    id: "html-q-18",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which element defines a thematic grouping of content, often with a heading?",
+    options: ["<div>", "<group>", "<section>", "<article>"],
+    correctAnswer: "<section>",
+    points: 2,
+    order: 18,
+  },
+
+  // ── Generic containers ──────────────────────────────────────────────
+  {
+    id: "html-q-19",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which generic container element is block-level and has no semantic meaning on its own?",
+    options: ["<span>", "<section>", "<div>", "<box>"],
+    correctAnswer: "<div>",
+    points: 2,
+    order: 19,
+  },
+  {
+    id: "html-q-20",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "The <span> element is an inline container used to group text or other inline elements.",
+    correctAnswer: "true",
+    points: 1,
+    order: 20,
+  },
+  {
+    id: "html-q-21",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "In HTML5, tag names are case-sensitive and must be written in lowercase only.",
+    correctAnswer: "false",
+    points: 1,
+    order: 21,
+  },
+  {
+    id: "html-q-22",
+    examId: EXAM_ID,
+    type: "short_answer",
+    text: "What does HTML stand for?",
+    correctAnswer: "HyperText Markup Language",
+    points: 3,
+    order: 22,
+  },
+];
+
+export const seedExams: Exam[] = [htmlStructureExam];
+export const seedQuestions: Question[] = htmlStructureQuestions;

@@ -58,7 +58,7 @@ export function DashboardPreview() {
           <div className="p-6">
             <div className="mb-5 flex items-center justify-between">
               <span className="text-[13px] font-medium text-accent-foreground">
-                WEBDEV2026 — Overview
+                HTML2026 — Overview
               </span>
               <span className="rounded-md border border-border bg-accent px-2.5 py-1 text-[11px] text-muted-foreground">
                 Export CSV
