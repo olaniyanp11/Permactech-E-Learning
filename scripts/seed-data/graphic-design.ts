@@ -1,4 +1,4 @@
-import type { Exam, Question } from "../src/types";
+import type { Exam, Question } from "../../src/types";
 
 const EXAM_ID = "exam-graphic-design";
 
@@ -12,6 +12,8 @@ export const graphicDesignExam: Exam = {
   password: "GFXPRO2026",
   durationMinutes: 45,
   isActive: true,
+  startsAt: null,
+  endsAt: null,
   createdAt: "2026-06-01T10:00:00.000Z",
   updatedAt: "2026-06-01T10:00:00.000Z",
 };

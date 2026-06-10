@@ -5,6 +5,7 @@ import {
   getExamById,
   getQuestionsByExamId,
 } from "@/lib/db/repository";
+import { getExamAvailability } from "@/lib/exam-availability";
 import { calculateScore } from "@/lib/scoring";
 import { generateId } from "@/lib/utils";
 import type { Answer, DeviceInfo, Submission } from "@/types";
@@ -50,7 +51,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid examination password" }, { status: 401 });
     }
 
-    const studentDuplicate = await findStudentDuplicate(examId, studentId);
+    const availability = getExamAvailability(exam);
+    if (!availability.ok) {
+      return NextResponse.json({ error: availability.message }, { status: 403 });
+    }
+
+    const normalizedStudentId = studentId.trim();
+    const studentDuplicate = await findStudentDuplicate(examId, normalizedStudentId);
 
     if (studentDuplicate) {
       return NextResponse.json(
@@ -72,7 +79,7 @@ export async function POST(request: NextRequest) {
       id: generateId(),
       examId,
       studentName,
-      studentId,
+      studentId: normalizedStudentId,
       studentClass,
       answers,
       ...scoring,

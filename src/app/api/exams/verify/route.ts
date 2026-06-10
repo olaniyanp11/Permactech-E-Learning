@@ -3,6 +3,7 @@ import {
   countQuestionsByExamId,
   findActiveExamByPassword,
 } from "@/lib/db/repository";
+import { getExamAvailability } from "@/lib/exam-availability";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,11 @@ export async function POST(request: NextRequest) {
 
     if (!exam) {
       return NextResponse.json({ error: "Invalid or inactive examination password" }, { status: 401 });
+    }
+
+    const availability = getExamAvailability(exam);
+    if (!availability.ok) {
+      return NextResponse.json({ error: availability.message }, { status: 403 });
     }
 
     const questionCount = await countQuestionsByExamId(exam.id);

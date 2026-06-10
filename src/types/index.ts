@@ -18,6 +18,8 @@ export interface Exam {
   password: string;
   durationMinutes: number;
   isActive: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

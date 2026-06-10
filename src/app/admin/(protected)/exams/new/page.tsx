@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { fromDatetimeLocalValue } from "@/lib/utils";
 
 export default function NewExamPage() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export default function NewExamPage() {
     password: "",
     durationMinutes: "45",
     isActive: true,
+    startsAt: "",
+    endsAt: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -28,8 +31,13 @@ export default function NewExamPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...form,
+        title: form.title,
+        instructions: form.instructions,
+        password: form.password,
         durationMinutes: Number(form.durationMinutes),
+        isActive: form.isActive,
+        startsAt: fromDatetimeLocalValue(form.startsAt),
+        endsAt: fromDatetimeLocalValue(form.endsAt),
       }),
     });
 
@@ -71,9 +79,11 @@ export default function NewExamPage() {
           </div>
           <Input
             label="Examination Password"
+            type="password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
+            autoComplete="new-password"
           />
           <Input
             label="Duration (minutes)"
@@ -83,6 +93,23 @@ export default function NewExamPage() {
             onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })}
             required
           />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Opens at (optional)"
+              type="datetime-local"
+              value={form.startsAt}
+              onChange={(e) => setForm({ ...form, startsAt: e.target.value })}
+            />
+            <Input
+              label="Closes at (optional)"
+              type="datetime-local"
+              value={form.endsAt}
+              onChange={(e) => setForm({ ...form, endsAt: e.target.value })}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Leave blank to allow access anytime while the exam is active.
+          </p>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"

@@ -1,4 +1,30 @@
-export const htmlStructureQuestions = [
+import type { Exam, Question } from "../../src/types";
+
+const EXAM_ID = "exam-html-structure";
+
+export const htmlStructureExam: Exam = {
+  id: EXAM_ID,
+  title: "HTML Elements & Document Structure",
+  instructions:
+    "This assessment covers HTML tags, elements, and basic document structure. " +
+    "Read each question carefully. You have 30 minutes. " +
+    "Multiple choice and true/false questions are auto-graded.",
+  password: "HTML2026",
+  durationMinutes: 30,
+  isActive: true,
+  startsAt: "2026-06-11T11:00:00.000Z", // Thu 12:00 PM (WAT)
+  endsAt: "2026-06-12T23:00:00.000Z", // Sat 12:00 AM midnight (WAT)
+  createdAt: "2026-06-01T08:00:00.000Z",
+  updatedAt: "2026-06-01T08:00:00.000Z",
+};
+
+export { EXAM_ID };
+
+type RawQuestion = Omit<Question, "examId" | "type"> & {
+  type: Question["type"] | "fill_blank";
+};
+
+const rawQuestions: RawQuestion[] = [
 
   // ── TRUE / FALSE (1 mark each × 10 = 10 marks) ──────────────────────
 
@@ -246,3 +272,9 @@ export const htmlStructureQuestions = [
     order: 28,
   },
 ];
+
+export const htmlStructureQuestions: Question[] = rawQuestions.map((q) => ({
+  ...q,
+  examId: EXAM_ID,
+  type: q.type === "fill_blank" ? "short_answer" : q.type,
+}));

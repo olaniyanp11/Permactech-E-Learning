@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { IconAlertTriangle, IconClipboardCheck } from "@tabler/icons-react";
+import { IconClipboardCheck } from "@tabler/icons-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -19,13 +19,11 @@ export default function AssessmentEntryPage() {
     password: "",
   });
   const [error, setError] = useState("");
-  const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setWarning("");
     setLoading(true);
 
     try {
@@ -35,30 +33,15 @@ export default function AssessmentEntryPage() {
         body: JSON.stringify({ password: form.password }),
       });
 
+      const verifyData = await verifyRes.json();
+
       if (!verifyRes.ok) {
-        setError("Invalid examination password. Please check with your instructor.");
+        setError(verifyData.error ?? "Invalid examination password. Please check with your instructor.");
         setLoading(false);
         return;
       }
 
-      const { exam } = await verifyRes.json();
-
-      const checkRes = await fetch("/api/submissions/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          examId: exam.id,
-          studentId: form.studentId,
-        }),
-      });
-
-      const checkData = await checkRes.json();
-
-      if (checkData.duplicate) {
-        setWarning(checkData.message);
-        setLoading(false);
-        return;
-      }
+      const { exam } = verifyData;
 
       sessionStorage.setItem(
         "teacheros_session",
@@ -66,7 +49,7 @@ export default function AssessmentEntryPage() {
           examId: exam.id,
           examTitle: exam.title,
           fullName: form.fullName,
-          studentId: form.studentId,
+          studentId: form.studentId.trim(),
           studentClass: form.studentClass,
           password: form.password,
           durationMinutes: exam.durationMinutes,
@@ -117,6 +100,7 @@ export default function AssessmentEntryPage() {
               value={form.studentId}
               onChange={(e) => setForm({ ...form, studentId: e.target.value })}
               required
+              placeholder="e.g. UPS2026001"
             />
             <Input
               label="Class"
@@ -133,19 +117,6 @@ export default function AssessmentEntryPage() {
               required
             />
 
-            {warning && (
-              <div
-                className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning-bg p-3 text-sm text-warning"
-                role="alert"
-              >
-                <IconAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                <div>
-                  <p className="font-medium">Duplicate attempt detected</p>
-                  <p className="mt-1 text-xs opacity-90">{warning}</p>
-                </div>
-              </div>
-            )}
-
             {error && (
               <p className="text-sm text-destructive" role="alert">
                 {error}
@@ -159,7 +130,7 @@ export default function AssessmentEntryPage() {
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Only one submission is allowed per Student ID.
+          Only one submission counts per Student ID (e.g. UPS2026001–UPS2026025).
         </p>
       </main>
     </div>

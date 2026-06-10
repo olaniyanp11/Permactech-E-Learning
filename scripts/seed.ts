@@ -35,7 +35,7 @@ async function seed() {
 
   console.log("\nSeed complete.");
   console.log("─────────────────────────────────────────");
-  console.log(`  Admin:  ${admin.email} / admin123`);
+  console.log(`  Admin:  ${admin.email}`);
   console.log("");
 
   for (const exam of seedExams) {

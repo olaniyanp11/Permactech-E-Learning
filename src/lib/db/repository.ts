@@ -18,6 +18,8 @@ function mapExam(row: typeof exams.$inferSelect): Exam {
     password: row.password,
     durationMinutes: row.durationMinutes,
     isActive: row.isActive,
+    startsAt: row.startsAt ?? null,
+    endsAt: row.endsAt ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

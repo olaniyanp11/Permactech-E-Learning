@@ -24,6 +24,8 @@ export const exams = pgTable("exams", {
   password: text("password").notNull(),
   durationMinutes: integer("duration_minutes").notNull(),
   isActive: boolean("is_active").notNull().default(true),
+  startsAt: timestamp("starts_at", { withTimezone: true, mode: "string" }),
+  endsAt: timestamp("ends_at", { withTimezone: true, mode: "string" }),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull(),
 });

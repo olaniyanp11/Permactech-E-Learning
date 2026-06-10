@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { formatDate, toDatetimeLocalValue } from "@/lib/utils";
 import type { Exam, Question, QuestionType } from "@/types";
 
 export default function EditExamPage() {
@@ -111,8 +112,10 @@ export default function EditExamPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Input
               label="Password"
+              type="password"
               value={exam.password}
               onChange={(e) => setExam({ ...exam, password: e.target.value })}
+              autoComplete="new-password"
             />
             <Input
               label="Duration (minutes)"
@@ -121,6 +124,37 @@ export default function EditExamPage() {
               onChange={(e) => setExam({ ...exam, durationMinutes: Number(e.target.value) })}
             />
           </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Opens at (optional)"
+              type="datetime-local"
+              value={toDatetimeLocalValue(exam.startsAt)}
+              onChange={(e) =>
+                setExam({
+                  ...exam,
+                  startsAt: e.target.value ? new Date(e.target.value).toISOString() : null,
+                })
+              }
+            />
+            <Input
+              label="Closes at (optional)"
+              type="datetime-local"
+              value={toDatetimeLocalValue(exam.endsAt)}
+              onChange={(e) =>
+                setExam({
+                  ...exam,
+                  endsAt: e.target.value ? new Date(e.target.value).toISOString() : null,
+                })
+              }
+            />
+          </div>
+          {(exam.startsAt || exam.endsAt) && (
+            <p className="text-xs text-muted-foreground">
+              {exam.startsAt && <>Opens {formatDate(exam.startsAt)}</>}
+              {exam.startsAt && exam.endsAt && " · "}
+              {exam.endsAt && <>Closes {formatDate(exam.endsAt)}</>}
+            </p>
+          )}
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"

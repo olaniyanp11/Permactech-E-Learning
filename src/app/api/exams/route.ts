@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
       password: body.password,
       durationMinutes: Number(body.durationMinutes) || 60,
       isActive: body.isActive ?? true,
+      startsAt: body.startsAt ?? null,
+      endsAt: body.endsAt ?? null,
       createdAt: now,
       updatedAt: now,
     };
