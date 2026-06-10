@@ -72,9 +72,12 @@ export default function ExamsPage() {
               <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">
                 {exam.instructions || "No instructions"}
               </p>
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <Link href={`/admin/exams/${exam.id}`}>
                   <Button variant="ghost" size="sm">Edit</Button>
+                </Link>
+                <Link href={`/admin/submissions?examId=${exam.id}`}>
+                  <Button variant="ghost" size="sm">Submissions</Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={() => handleDelete(exam.id)}>
                   Delete

@@ -1,34 +1,49 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { IconDownload } from "@tabler/icons-react";
-import { SubmissionsTable } from "@/components/admin/SubmissionsTable";
+import {
+  buildSubmissionGroups,
+  GroupedSubmissions,
+} from "@/components/admin/GroupedSubmissions";
 import { Button } from "@/components/ui/Button";
-import type { Submission } from "@/types";
+import type { Exam, Submission } from "@/types";
 
 function SubmissionsContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const isRankings = searchParams.get("tab") === "rankings";
+  const examIdFilter = searchParams.get("examId");
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [ranked, setRanked] = useState<(Submission & { rank: number })[]>([]);
-  const [ranks, setRanks] = useState<Record<string, number>>({});
+  const [exams, setExams] = useState<Exam[]>([]);
 
   useEffect(() => {
-    fetch("/api/submissions")
-      .then((r) => r.json())
-      .then((data) => {
-        setSubmissions(data.submissions);
-        setRanked(data.ranked);
-        setRanks(data.ranks);
+    Promise.all([fetch("/api/submissions").then((r) => r.json()), fetch("/api/exams").then((r) => r.json())])
+      .then(([submissionData, examData]) => {
+        setSubmissions(submissionData.submissions);
+        setExams(examData);
       });
   }, []);
 
-  const displaySubmissions = isRankings
-    ? ranked
-    : submissions.sort(
-        (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-      );
+  const groups = useMemo(
+    () => buildSubmissionGroups(submissions, exams, examIdFilter),
+    [submissions, exams, examIdFilter]
+  );
+
+  function setExamFilter(examId: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (examId === "all") {
+      params.delete("examId");
+    } else {
+      params.set("examId", examId);
+    }
+    router.push(`/admin/submissions?${params.toString()}`);
+  }
+
+  const exportUrl = examIdFilter
+    ? `/api/submissions/export?examId=${examIdFilter}`
+    : "/api/submissions/export";
 
   return (
     <div className="space-y-6">
@@ -39,21 +54,39 @@ function SubmissionsContent() {
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {isRankings
-              ? "Student scores ranked by performance."
-              : "All student submissions with device information."}
+              ? "Student scores ranked within each examination."
+              : "Submissions grouped by examination."}
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => { window.location.href = "/api/submissions/export"; }}>
+        <Button variant="ghost" size="sm" onClick={() => { window.location.href = exportUrl; }}>
           <IconDownload className="h-4 w-4" />
           Export CSV
         </Button>
       </div>
 
-      <SubmissionsTable
-        submissions={displaySubmissions}
+      <div className="flex flex-wrap items-center gap-3">
+        <label htmlFor="exam-filter" className="text-sm text-muted-foreground">
+          Filter by exam
+        </label>
+        <select
+          id="exam-filter"
+          value={examIdFilter ?? "all"}
+          onChange={(e) => setExamFilter(e.target.value)}
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+        >
+          <option value="all">All exams</option>
+          {exams.map((exam) => (
+            <option key={exam.id} value={exam.id}>
+              {exam.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <GroupedSubmissions
+        groups={groups}
         showDevice={!isRankings}
         showRank={isRankings}
-        ranks={ranks}
       />
     </div>
   );
