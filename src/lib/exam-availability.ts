@@ -5,19 +5,15 @@ export type ExamAvailability =
   | { ok: true }
   | { ok: false; message: string };
 
-function toMinuteMs(date: Date): number {
-  return Math.floor(date.getTime() / 60_000) * 60_000;
-}
-
 export function getExamAvailability(
   exam: Pick<Exam, "startsAt" | "endsAt">,
   now = new Date()
 ): ExamAvailability {
-  const nowMinute = toMinuteMs(now);
+  const nowMs = now.getTime();
 
   if (exam.startsAt) {
     const start = parseTimestamp(exam.startsAt);
-    if (start && nowMinute < toMinuteMs(start)) {
+    if (start && nowMs < start.getTime()) {
       return {
         ok: false,
         message: `This exam opens on ${formatExamDate(start)}.`,
@@ -27,7 +23,7 @@ export function getExamAvailability(
 
   if (exam.endsAt) {
     const end = parseTimestamp(exam.endsAt);
-    if (end && nowMinute > toMinuteMs(end)) {
+    if (end && nowMs >= end.getTime()) {
       return {
         ok: false,
         message: `This exam closed on ${formatExamDate(end)}.`,

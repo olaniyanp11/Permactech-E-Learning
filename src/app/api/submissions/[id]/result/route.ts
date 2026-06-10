@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getExamById,
-  getQuestionsByExamId,
-  getSubmissionById,
-} from "@/lib/db/repository";
-import { getSubmissionBreakdown } from "@/lib/scoring";
+import { getExamById, getSubmissionById } from "@/lib/db/repository";
 import { formatDate, formatPercent } from "@/lib/utils";
 
 export async function GET(
@@ -29,16 +24,11 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  const [exam, questions] = await Promise.all([
-    getExamById(submission.examId),
-    getQuestionsByExamId(submission.examId),
-  ]);
+  const exam = await getExamById(submission.examId);
 
   if (!exam) {
     return NextResponse.json({ error: "Exam not found" }, { status: 404 });
   }
-
-  const breakdown = getSubmissionBreakdown(questions, submission.answers);
 
   const summaryRows = [
     ["TeacherOS Assessment Result"],
@@ -50,14 +40,6 @@ export async function GET(
     ["Score", `${submission.score} / ${submission.maxScore}`],
     ["Percentage", formatPercent(submission.percentage)],
     ["Submitted", formatDate(submission.submittedAt)],
-    [],
-    ["Question", "Your Answer", "Points Earned", "Max Points"],
-    ...breakdown.map((row) => [
-      `Q${row.order}: ${row.question}`,
-      row.yourAnswer,
-      row.pointsEarned.toString(),
-      row.maxPoints.toString(),
-    ]),
   ];
 
   const csv = summaryRows

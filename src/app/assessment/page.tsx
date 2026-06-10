@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IconClipboardCheck } from "@tabler/icons-react";
@@ -20,6 +20,14 @@ export default function AssessmentEntryPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const flashError = sessionStorage.getItem("teacheros_entry_error");
+    if (flashError) {
+      setError(flashError);
+      sessionStorage.removeItem("teacheros_entry_error");
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,6 +64,7 @@ export default function AssessmentEntryPage() {
           studentClass: form.studentClass,
           password: form.password,
           durationMinutes: exam.durationMinutes,
+          endsAt: exam.endsAt ?? null,
           instructions: exam.instructions,
           startedAt: new Date().toISOString(),
         })

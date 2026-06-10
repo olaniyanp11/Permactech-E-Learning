@@ -151,13 +151,17 @@ export default function EditExamPage() {
               }
             />
           </div>
-          {(exam.startsAt || exam.endsAt) && (
-            <p className="text-xs text-muted-foreground">
-              {exam.startsAt && <>Opens {formatExamDate(exam.startsAt)}</>}
-              {exam.startsAt && exam.endsAt && " · "}
-              {exam.endsAt && <>Closes {formatExamDate(exam.endsAt)}</>}
-            </p>
-          )}
+          <p className="text-xs text-muted-foreground">
+            Times use West Africa Time (WAT).
+            {(exam.startsAt || exam.endsAt) && (
+              <>
+                {" "}
+                {exam.startsAt && <>Opens {formatExamDate(exam.startsAt)}</>}
+                {exam.startsAt && exam.endsAt && " · "}
+                {exam.endsAt && <>Closes {formatExamDate(exam.endsAt)}</>}
+              </>
+            )}
+          </p>
           <div>
             <label className="mb-1.5 block text-sm font-medium">
               Allowed Student IDs (optional)

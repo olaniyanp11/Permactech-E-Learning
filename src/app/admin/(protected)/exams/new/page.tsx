@@ -114,7 +114,7 @@ export default function NewExamPage() {
             />
           </div>
           <p className="text-xs text-muted-foreground">
-            Leave blank to allow access anytime while the exam is active.
+            Times use West Africa Time (WAT). Leave blank to allow access anytime while the exam is active.
           </p>
           <div>
             <label className="mb-1.5 block text-sm font-medium">

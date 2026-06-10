@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, parseTimestamp } from "@/lib/utils";
 import type { Question } from "@/types";
 
 interface ExamTimerProps {
   durationMinutes: number;
   startedAt: string;
+  endsAt?: string | null;
   onTimeUp: () => void;
 }
 
@@ -16,22 +17,26 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
-export function ExamTimer({ durationMinutes, startedAt, onTimeUp }: ExamTimerProps) {
+export function ExamTimer({ durationMinutes, startedAt, endsAt, onTimeUp }: ExamTimerProps) {
   const totalSeconds = durationMinutes * 60;
   const [remaining, setRemaining] = useState(totalSeconds);
 
   useEffect(() => {
-    const start = new Date(startedAt).getTime();
+    const startMs = new Date(startedAt).getTime();
+    const durationEndMs = startMs + totalSeconds * 1000;
+    const windowEndMs = endsAt ? parseTimestamp(endsAt)?.getTime() ?? null : null;
+    const effectiveEndMs =
+      windowEndMs != null ? Math.min(durationEndMs, windowEndMs) : durationEndMs;
+
     const tick = () => {
-      const elapsed = Math.floor((Date.now() - start) / 1000);
-      const left = Math.max(0, totalSeconds - elapsed);
+      const left = Math.max(0, Math.floor((effectiveEndMs - Date.now()) / 1000));
       setRemaining(left);
       if (left === 0) onTimeUp();
     };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [startedAt, totalSeconds, onTimeUp]);
+  }, [startedAt, totalSeconds, endsAt, onTimeUp]);
 
   const isLow = remaining <= 300;
 

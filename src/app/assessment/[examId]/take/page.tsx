@@ -28,6 +28,7 @@ interface ExamSession {
   studentClass: string;
   password: string;
   durationMinutes: number;
+  endsAt: string | null;
   instructions: string;
   startedAt: string;
 }
@@ -56,14 +57,45 @@ export default function TakeExamPage() {
       return;
     }
 
-    setSession(parsed);
+    async function loadExam() {
+      const verifyRes = await fetch("/api/exams/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: parsed.password,
+          studentId: parsed.studentId,
+        }),
+      });
 
-    const saved = loadAnswersLocally(examId, parsed.studentId);
-    if (saved) setAnswers(saved);
+      if (!verifyRes.ok) {
+        const verifyData = await verifyRes.json();
+        sessionStorage.removeItem("teacheros_session");
+        if (verifyData.alreadySubmitted) {
+          sessionStorage.setItem(
+            "teacheros_entry_error",
+            verifyData.error ??
+              "You have already submitted this examination. Only one attempt is allowed."
+          );
+        }
+        router.replace("/assessment");
+        return;
+      }
 
-    fetch(`/api/exams/${examId}`)
-      .then((r) => r.json())
-      .then((data) => setQuestions(data.questions));
+      const verifyData = await verifyRes.json();
+      setSession({
+        ...parsed,
+        endsAt: verifyData.exam?.endsAt ?? parsed.endsAt ?? null,
+      });
+
+      const saved = loadAnswersLocally(examId, parsed.studentId);
+      if (saved) setAnswers(saved);
+
+      const examRes = await fetch(`/api/exams/${examId}`);
+      const data = await examRes.json();
+      setQuestions(data.questions);
+    }
+
+    loadExam();
   }, [examId, router]);
 
   const handleAnswerChange = useCallback(
@@ -167,6 +199,7 @@ export default function TakeExamPage() {
           <ExamTimer
             durationMinutes={session.durationMinutes}
             startedAt={session.startedAt}
+            endsAt={session.endsAt}
             onTimeUp={handleTimeUp}
           />
         </div>
