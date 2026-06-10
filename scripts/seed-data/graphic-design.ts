@@ -1,0 +1,263 @@
+import type { Exam, Question } from "../src/types";
+
+const EXAM_ID = "exam-graphic-design";
+
+export const graphicDesignExam: Exam = {
+  id: EXAM_ID,
+  title: "Graphic Design — Professional General Assessment",
+  instructions:
+    "This assessment covers core graphic design knowledge: color, typography, layout, print production, " +
+    "branding, and industry workflow. Designed for experienced designers. You have 45 minutes. " +
+    "Multiple choice and true/false questions are auto-graded.",
+  password: "GFXPRO2026",
+  durationMinutes: 45,
+  isActive: true,
+  createdAt: "2026-06-01T10:00:00.000Z",
+  updatedAt: "2026-06-01T10:00:00.000Z",
+};
+
+export { EXAM_ID as GRAPHIC_DESIGN_EXAM_ID };
+
+export const graphicDesignQuestions: Question[] = [
+  // ── Color theory & models ───────────────────────────────────────────
+  {
+    id: "gfx-q-01",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which color model is the industry standard for professional offset printing?",
+    options: ["RGB", "CMYK", "HSL", "Indexed Color"],
+    correctAnswer: "CMYK",
+    points: 2,
+    order: 1,
+  },
+  {
+    id: "gfx-q-02",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "RGB typically displays a wider gamut than CMYK, so on-screen colors often appear more vivid than their printed equivalents.",
+    correctAnswer: "true",
+    points: 2,
+    order: 2,
+  },
+  {
+    id: "gfx-q-03",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which color harmony uses hues positioned directly opposite each other on the color wheel?",
+    options: ["Analogous", "Monochromatic", "Complementary", "Split-complementary"],
+    correctAnswer: "Complementary",
+    points: 2,
+    order: 3,
+  },
+  {
+    id: "gfx-q-04",
+    examId: EXAM_ID,
+    type: "short_answer",
+    text: "What standardized color matching system is widely used by designers and printers for spot colors?",
+    correctAnswer: "Pantone",
+    points: 3,
+    order: 4,
+  },
+
+  // ── Typography ──────────────────────────────────────────────────────
+  {
+    id: "gfx-q-05",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which term describes the adjustment of space between specific letter pairs (e.g. AV, To)?",
+    options: ["Leading", "Tracking", "Kerning", "Baseline shift"],
+    correctAnswer: "Kerning",
+    points: 2,
+    order: 5,
+  },
+  {
+    id: "gfx-q-06",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "In typography, what does 'x-height' refer to?",
+    options: [
+      "The height of capital letters",
+      "The height of the body of lowercase letters",
+      "The space between lines of text",
+      "The width of the em square",
+    ],
+    correctAnswer: "The height of the body of lowercase letters",
+    points: 2,
+    order: 6,
+  },
+  {
+    id: "gfx-q-07",
+    examId: EXAM_ID,
+    type: "short_answer",
+    text: "What is the typographic term for the vertical spacing between lines of text?",
+    correctAnswer: "leading",
+    points: 2,
+    order: 7,
+  },
+  {
+    id: "gfx-q-08",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "Serif typefaces are generally considered more readable than sans-serif for long passages of printed body text.",
+    correctAnswer: "true",
+    points: 1,
+    order: 8,
+  },
+
+  // ── Layout & composition ────────────────────────────────────────────
+  {
+    id: "gfx-q-09",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which Gestalt principle explains why elements placed close together are perceived as belonging to the same group?",
+    options: ["Similarity", "Proximity", "Closure", "Figure-ground"],
+    correctAnswer: "Proximity",
+    points: 2,
+    order: 9,
+  },
+  {
+    id: "gfx-q-10",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "The rule of thirds divides a frame into nine equal sections using two horizontal and two vertical lines.",
+    correctAnswer: "true",
+    points: 1,
+    order: 10,
+  },
+  {
+    id: "gfx-q-11",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "In layout design, white space (negative space) primarily serves to:",
+    options: [
+      "Fill unused areas with decorative patterns",
+      "Reduce the overall file size",
+      "Create breathing room, balance, and visual hierarchy",
+      "Lower print costs by using less ink",
+    ],
+    correctAnswer: "Create breathing room, balance, and visual hierarchy",
+    points: 2,
+    order: 11,
+  },
+  {
+    id: "gfx-q-12",
+    examId: EXAM_ID,
+    type: "short_answer",
+    text: "What ratio (approximately 1.618) is commonly used for aesthetically pleasing proportions in composition?",
+    correctAnswer: "golden ratio",
+    points: 3,
+    order: 12,
+  },
+
+  // ── Print production ────────────────────────────────────────────────
+  {
+    id: "gfx-q-13",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "In print design, 'bleed' refers to:",
+    options: [
+      "The safe margin inside the trim line",
+      "Artwork that extends beyond the trim edge to avoid white borders after cutting",
+      "The total ink coverage limit on press",
+      "A color profile for newsprint",
+    ],
+    correctAnswer: "Artwork that extends beyond the trim edge to avoid white borders after cutting",
+    points: 2,
+    order: 13,
+  },
+  {
+    id: "gfx-q-14",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "For high-quality commercial offset printing, raster images are typically prepared at:",
+    options: ["72 PPI", "150 PPI", "300 PPI", "600 PPI"],
+    correctAnswer: "300 PPI",
+    points: 2,
+    order: 14,
+  },
+  {
+    id: "gfx-q-15",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "Vector graphics are resolution-independent and can be scaled without loss of quality.",
+    correctAnswer: "true",
+    points: 1,
+    order: 15,
+  },
+
+  // ── File formats & tools ────────────────────────────────────────────
+  {
+    id: "gfx-q-16",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which file format is vector-based and ideal for logos that must scale to any size?",
+    options: ["JPEG", "PNG", "SVG", "TIFF"],
+    correctAnswer: "SVG",
+    points: 2,
+    order: 16,
+  },
+  {
+    id: "gfx-q-17",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which Adobe application is purpose-built for multi-page print layouts such as magazines and brochures?",
+    options: ["Photoshop", "Illustrator", "InDesign", "After Effects"],
+    correctAnswer: "InDesign",
+    points: 2,
+    order: 17,
+  },
+  {
+    id: "gfx-q-18",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "Which Adobe application is primarily used for vector illustration and logo design?",
+    options: ["Photoshop", "Illustrator", "InDesign", "Lightroom"],
+    correctAnswer: "Illustrator",
+    points: 2,
+    order: 18,
+  },
+  {
+    id: "gfx-q-19",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "JPEG uses lossy compression and is a poor choice for logos with sharp edges and flat color areas.",
+    correctAnswer: "true",
+    points: 2,
+    order: 19,
+  },
+
+  // ── Branding & principles ───────────────────────────────────────────
+  {
+    id: "gfx-q-20",
+    examId: EXAM_ID,
+    type: "mcq",
+    text: "A comprehensive brand style guide typically includes all of the following EXCEPT:",
+    options: [
+      "Logo clear space and minimum size rules",
+      "Approved color palettes and typography",
+      "The client's personal meeting schedule",
+      "Correct and incorrect logo usage examples",
+    ],
+    correctAnswer: "The client's personal meeting schedule",
+    points: 2,
+    order: 20,
+  },
+  {
+    id: "gfx-q-21",
+    examId: EXAM_ID,
+    type: "true_false",
+    text: "Contrast, repetition, alignment, and proximity are four foundational principles of effective layout design.",
+    correctAnswer: "true",
+    points: 1,
+    order: 21,
+  },
+  {
+    id: "gfx-q-22",
+    examId: EXAM_ID,
+    type: "short_answer",
+    text: "What document defines exact logo usage, brand colors, typography, and visual rules for consistent identity?",
+    correctAnswer: "brand style guide",
+    points: 3,
+    order: 22,
+  },
+];

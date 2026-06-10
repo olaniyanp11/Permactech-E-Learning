@@ -189,25 +189,6 @@ export async function findStudentDuplicate(
   return row ? mapSubmission(row) : null;
 }
 
-export async function findDeviceDuplicate(
-  examId: string,
-  fingerprint: string
-): Promise<Submission | null> {
-  const db = getDb();
-  const [row] = await db
-    .select()
-    .from(submissions)
-    .where(
-      and(
-        eq(submissions.examId, examId),
-        eq(submissions.status, "submitted"),
-        sql`${submissions.deviceInfo}->>'fingerprint' = ${fingerprint}`
-      )
-    )
-    .limit(1);
-  return row ? mapSubmission(row) : null;
-}
-
 export async function createSubmission(submission: Submission): Promise<Submission> {
   const db = getDb();
   await db.insert(submissions).values(submission);

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { collectDeviceInfo } from "@/lib/fingerprint";
 import { APP_SHORT_NAME } from "@/lib/constants";
 
 export default function AssessmentEntryPage() {
@@ -43,7 +42,6 @@ export default function AssessmentEntryPage() {
       }
 
       const { exam } = await verifyRes.json();
-      const deviceInfo = await collectDeviceInfo();
 
       const checkRes = await fetch("/api/submissions/check", {
         method: "POST",
@@ -51,7 +49,6 @@ export default function AssessmentEntryPage() {
         body: JSON.stringify({
           examId: exam.id,
           studentId: form.studentId,
-          fingerprint: deviceInfo.fingerprint,
         }),
       });
 
@@ -162,7 +159,7 @@ export default function AssessmentEntryPage() {
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Only one submission is allowed per student and device.
+          Only one submission is allowed per Student ID.
         </p>
       </main>
     </div>

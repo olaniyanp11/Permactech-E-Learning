@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import {
-  getAllExams,
-  getSubmittedSubmissions,
-} from "@/lib/db/repository";
-import { formatDate, formatPercent } from "@/lib/utils";
+import { getSubmittedSubmissions } from "@/lib/db/repository";
 
 export async function GET(request: NextRequest) {
   const session = await getSession();
@@ -15,44 +11,14 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const examId = searchParams.get("examId");
 
-  const [submissions, exams] = await Promise.all([
-    getSubmittedSubmissions(examId ?? undefined),
-    getAllExams(),
-  ]);
+  const submissions = await getSubmittedSubmissions(examId ?? undefined);
 
-  const examTitles = Object.fromEntries(exams.map((e) => [e.id, e.title]));
+  const sorted = [...submissions].sort((a, b) =>
+    a.studentName.localeCompare(b.studentName, undefined, { sensitivity: "base" })
+  );
 
-  const headers = [
-    "Student Name",
-    "Student ID",
-    "Class",
-    "Exam",
-    "Score",
-    "Max Score",
-    "Percentage",
-    "Submitted At",
-    "Browser",
-    "Platform",
-    "Screen",
-    "IP Address",
-    "Fingerprint",
-  ];
-
-  const rows = submissions.map((s) => [
-    s.studentName,
-    s.studentId,
-    s.studentClass,
-    examTitles[s.examId] ?? s.examId,
-    s.score.toString(),
-    s.maxScore.toString(),
-    formatPercent(s.percentage),
-    formatDate(s.submittedAt),
-    s.deviceInfo.browser,
-    s.deviceInfo.platform,
-    s.deviceInfo.screenResolution,
-    s.deviceInfo.ipAddress ?? "N/A",
-    s.deviceInfo.fingerprint,
-  ]);
+  const headers = ["Student Name", "Student ID", "Score"];
+  const rows = sorted.map((s) => [s.studentName, s.studentId, `${s.score}/${s.maxScore}`]);
 
   const csv = [headers, ...rows]
     .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
@@ -61,7 +27,7 @@ export async function GET(request: NextRequest) {
   return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="teacheros-results-${Date.now()}.csv"`,
+      "Content-Disposition": `attachment; filename="scores-${Date.now()}.csv"`,
     },
   });
 }

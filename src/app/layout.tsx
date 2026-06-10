@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ChatwootWidget } from "@/components/ChatwootWidget";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { APP_NAME } from "@/lib/constants";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full`}>
       <body className="min-h-full bg-background text-foreground antialiased">
         <ThemeProvider>{children}</ThemeProvider>
+        <ChatwootWidget />
       </body>
     </html>
   );

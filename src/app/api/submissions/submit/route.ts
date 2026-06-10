@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createSubmission,
-  findDeviceDuplicate,
   findStudentDuplicate,
   getExamById,
   getQuestionsByExamId,
@@ -60,20 +59,6 @@ export async function POST(request: NextRequest) {
           duplicate: true,
           reason: "student_id",
           message: "A submission already exists for this Student ID. Only one attempt is allowed.",
-        },
-        { status: 409 }
-      );
-    }
-
-    const deviceDuplicate = await findDeviceDuplicate(examId, deviceInfo.fingerprint);
-
-    if (deviceDuplicate) {
-      return NextResponse.json(
-        {
-          error: "Duplicate submission detected",
-          duplicate: true,
-          reason: "device",
-          message: "A submission already exists from this device. Only one attempt per device is allowed.",
         },
         { status: 409 }
       );

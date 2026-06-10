@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
-import { APP_SHORT_NAME, DEFAULT_ADMIN_EMAIL } from "@/lib/constants";
+import { APP_SHORT_NAME } from "@/lib/constants";
 
 export function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -79,10 +79,7 @@ export function AdminLoginForm() {
         </Button>
       </form>
 
-      <p className="mt-4 text-center text-xs text-muted-foreground">
-        Demo: {DEFAULT_ADMIN_EMAIL} / admin123
-      </p>
-      <Link href="/" className="mt-4 block text-center text-xs text-primary hover:underline">
+      <Link href="/" className="mt-6 block text-center text-xs text-primary hover:underline">
         ← Back to home
       </Link>
     </Card>

@@ -21,7 +21,7 @@ const features = [
   {
     icon: IconShieldLock,
     title: "Secure Assessments",
-    description: "Password-protected exams with device fingerprinting and duplicate attempt prevention.",
+    description: "Password-protected exams with one attempt per Student ID.",
   },
   {
     icon: IconChartLine,

@@ -21,8 +21,8 @@ export default function TermsPage() {
             ensuring fair use of the platform.
           </p>
           <p>
-            Attempts to circumvent anti-cheat measures, including duplicate submissions
-            from multiple devices, may result in disqualification at the instructor&apos;s discretion.
+            Attempts to submit more than once with the same Student ID may result in
+            disqualification at the instructor&apos;s discretion.
           </p>
         </div>
         <Link href="/" className="mt-8 inline-block text-sm text-primary hover:underline">

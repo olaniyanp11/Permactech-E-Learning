@@ -33,15 +33,20 @@ async function seed() {
   console.log(`Inserting ${seedQuestions.length} question(s)...`);
   await db.insert(questions).values(seedQuestions);
 
-  const totalPoints = seedQuestions.reduce((sum, q) => sum + q.points, 0);
-
   console.log("\nSeed complete.");
   console.log("─────────────────────────────────────────");
-  console.log(`  Admin:     ${admin.email} / admin123`);
-  console.log(`  Exam:      ${seedExams[0].title}`);
-  console.log(`  Password:  ${seedExams[0].password}`);
-  console.log(`  Questions: ${seedQuestions.length} (HTML structure only)`);
-  console.log(`  Max score: ${totalPoints} points`);
+  console.log(`  Admin:  ${admin.email} / admin123`);
+  console.log("");
+
+  for (const exam of seedExams) {
+    const examQuestions = seedQuestions.filter((q) => q.examId === exam.id);
+    const maxScore = examQuestions.reduce((sum, q) => sum + q.points, 0);
+    console.log(`  Exam:      ${exam.title}`);
+    console.log(`  Password:  ${exam.password}`);
+    console.log(`  Questions: ${examQuestions.length} (${maxScore} pts) · ${exam.durationMinutes} min`);
+    console.log("");
+  }
+
   console.log("─────────────────────────────────────────");
 
   await client.end();

@@ -17,8 +17,8 @@ export default function PrivacyPage() {
             and device metadata solely for examination administration and integrity monitoring.
           </p>
           <p>
-            Device fingerprints and browser information are used to prevent duplicate submissions
-            and maintain assessment security. IP addresses are logged when available.
+            Each Student ID may only be used once per examination. Device metadata is
+            recorded for administration purposes. IP addresses are logged when available.
           </p>
           <p>
             Data is stored securely and accessible only to authorized administrators.

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none" role="img" aria-label="TeacherOS">
+  <rect width="180" height="180" rx="40" fill="#2563eb"/>
+  <rect x="45" y="34" width="90" height="112" rx="14" fill="#ffffff"/>
+  <rect x="67" y="22" width="46" height="22" rx="11" fill="#ffffff"/>
+  <rect x="76" y="28" width="28" height="11" rx="5.5" fill="#dbeafe"/>
+  <path d="M62 79h56" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+  <path d="M62 99h39" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
+  <path d="M62 120l14 14 31-34" stroke="#2563eb" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
