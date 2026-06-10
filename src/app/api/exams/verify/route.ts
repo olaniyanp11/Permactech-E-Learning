@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readDb } from "@/lib/db";
+import {
+  countQuestionsByExamId,
+  findActiveExamByPassword,
+} from "@/lib/db/repository";
 
 export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json();
-    const db = readDb();
-
-    const exam = db.exams.find(
-      (e) => e.password === password && e.isActive
-    );
+    const exam = await findActiveExamByPassword(password);
 
     if (!exam) {
       return NextResponse.json({ error: "Invalid or inactive examination password" }, { status: 401 });
     }
 
-    const questionCount = db.questions.filter((q) => q.examId === exam.id).length;
+    const questionCount = await countQuestionsByExamId(exam.id);
 
     return NextResponse.json({
       exam: {

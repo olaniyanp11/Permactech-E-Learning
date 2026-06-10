@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" fill="none" role="img" aria-label="Assessment workflow">
+  <rect width="480" height="320" rx="20" fill="#faf5ff"/>
+  <rect x="32" y="120" width="96" height="96" rx="16" fill="#ffffff" stroke="#ddd6fe"/>
+  <text x="80" y="176" text-anchor="middle" fill="#7c3aed" font-family="system-ui,sans-serif" font-size="28" font-weight="600">1</text>
+  <rect x="192" y="120" width="96" height="96" rx="16" fill="#ffffff" stroke="#ddd6fe"/>
+  <text x="240" y="176" text-anchor="middle" fill="#7c3aed" font-family="system-ui,sans-serif" font-size="28" font-weight="600">2</text>
+  <rect x="352" y="120" width="96" height="96" rx="16" fill="#ffffff" stroke="#ddd6fe"/>
+  <text x="400" y="176" text-anchor="middle" fill="#7c3aed" font-family="system-ui,sans-serif" font-size="28" font-weight="600">3</text>
+  <path d="M128 168h64M304 168h48" stroke="#c4b5fd" stroke-width="3" stroke-linecap="round"/>
+  <rect x="56" y="56" width="368" height="12" rx="6" fill="#7c3aed" opacity="0.15"/>
+  <rect x="120" y="244" width="240" height="40" rx="12" fill="#7c3aed" opacity="0.12"/>
+  <rect x="152" y="258" width="176" height="12" rx="6" fill="#7c3aed" opacity="0.35"/>
+</svg>

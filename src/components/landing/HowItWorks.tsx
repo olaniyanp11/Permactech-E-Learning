@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const steps = [
   {
     step: "01",
@@ -17,7 +19,7 @@ const steps = [
   {
     step: "04",
     title: "Results are automatically recorded",
-    description: "Scores calculated instantly with full submission metadata stored.",
+    description: "Scores calculated instantly. Students can download their result as CSV.",
   },
 ];
 
@@ -28,6 +30,16 @@ export function HowItWorks() {
       <h2 className="mb-8 text-[1.6rem] font-medium tracking-[-0.03em] text-foreground">
         From setup to results in four steps
       </h2>
+
+      <div className="mb-10 mx-auto max-w-xs overflow-hidden rounded-xl border border-border-subtle sm:max-w-sm">
+        <Image
+          src="/landing/workflow.svg"
+          alt="Four-step assessment workflow from test creation to results"
+          width={480}
+          height={320}
+          className="hidden h-auto w-full md:block"
+        />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ step, title, description }) => (

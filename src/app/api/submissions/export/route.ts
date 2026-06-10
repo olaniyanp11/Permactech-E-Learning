@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { readDb } from "@/lib/db";
+import {
+  getAllExams,
+  getSubmittedSubmissions,
+} from "@/lib/db/repository";
 import { formatDate, formatPercent } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
@@ -12,14 +15,12 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const examId = searchParams.get("examId");
 
-  const db = readDb();
-  let submissions = db.submissions.filter((s) => s.status === "submitted");
+  const [submissions, exams] = await Promise.all([
+    getSubmittedSubmissions(examId ?? undefined),
+    getAllExams(),
+  ]);
 
-  if (examId) {
-    submissions = submissions.filter((s) => s.examId === examId);
-  }
-
-  const exams = Object.fromEntries(db.exams.map((e) => [e.id, e.title]));
+  const examTitles = Object.fromEntries(exams.map((e) => [e.id, e.title]));
 
   const headers = [
     "Student Name",
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
     s.studentName,
     s.studentId,
     s.studentClass,
-    exams[s.examId] ?? s.examId,
+    examTitles[s.examId] ?? s.examId,
     s.score.toString(),
     s.maxScore.toString(),
     formatPercent(s.percentage),

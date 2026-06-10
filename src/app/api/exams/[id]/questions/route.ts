@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { readDb, writeDb } from "@/lib/db";
+import {
+  createQuestion,
+  getExamById,
+  getQuestionsByExamId,
+} from "@/lib/db/repository";
 import { generateId } from "@/lib/utils";
 import type { Question } from "@/types";
 
@@ -9,11 +13,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const db = readDb();
-  const questions = db.questions
-    .filter((q) => q.examId === id)
-    .sort((a, b) => a.order - b.order);
-
+  const questions = await getQuestionsByExamId(id);
   return NextResponse.json(questions);
 }
 
@@ -27,15 +27,14 @@ export async function POST(
   }
 
   const { id: examId } = await params;
-  const db = readDb();
-  const exam = db.exams.find((e) => e.id === examId);
+  const exam = await getExamById(examId);
 
   if (!exam) {
     return NextResponse.json({ error: "Exam not found" }, { status: 404 });
   }
 
   const body = await request.json();
-  const existing = db.questions.filter((q) => q.examId === examId);
+  const existing = await getQuestionsByExamId(examId);
 
   const question: Question = {
     id: generateId(),
@@ -48,8 +47,6 @@ export async function POST(
     order: existing.length + 1,
   };
 
-  db.questions.push(question);
-  writeDb(db);
-
+  await createQuestion(question);
   return NextResponse.json(question, { status: 201 });
 }

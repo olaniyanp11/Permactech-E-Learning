@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { readDb, writeDb } from "@/lib/db";
+import { deleteQuestion, updateQuestion } from "@/lib/db/repository";
 
 export async function PUT(
   request: NextRequest,
@@ -12,20 +12,14 @@ export async function PUT(
   }
 
   const { id: examId, questionId } = await params;
-  const db = readDb();
-  const index = db.questions.findIndex(
-    (q) => q.id === questionId && q.examId === examId
-  );
+  const body = await request.json();
+  const updated = await updateQuestion(examId, questionId, body);
 
-  if (index === -1) {
+  if (!updated) {
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
 
-  const body = await request.json();
-  db.questions[index] = { ...db.questions[index], ...body };
-  writeDb(db);
-
-  return NextResponse.json(db.questions[index]);
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -38,11 +32,11 @@ export async function DELETE(
   }
 
   const { id: examId, questionId } = await params;
-  const db = readDb();
-  db.questions = db.questions.filter(
-    (q) => !(q.id === questionId && q.examId === examId)
-  );
-  writeDb(db);
+  const deleted = await deleteQuestion(examId, questionId);
+
+  if (!deleted) {
+    return NextResponse.json({ error: "Question not found" }, { status: 404 });
+  }
 
   return NextResponse.json({ success: true });
 }

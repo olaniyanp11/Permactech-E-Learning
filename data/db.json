@@ -25,7 +25,12 @@
       "examId": "exam-demo-1",
       "type": "mcq",
       "text": "Which HTML element is used to define the main content of a document?",
-      "options": ["<section>", "<main>", "<article>", "<div>"],
+      "options": [
+        "<section>",
+        "<main>",
+        "<article>",
+        "<div>"
+      ],
       "correctAnswer": "<main>",
       "points": 2,
       "order": 1
@@ -44,7 +49,12 @@
       "examId": "exam-demo-1",
       "type": "mcq",
       "text": "Which HTTP method is typically used to retrieve data from a server?",
-      "options": ["POST", "PUT", "GET", "DELETE"],
+      "options": [
+        "POST",
+        "PUT",
+        "GET",
+        "DELETE"
+      ],
       "correctAnswer": "GET",
       "points": 2,
       "order": 3
@@ -68,5 +78,51 @@
       "order": 5
     }
   ],
-  "submissions": []
+  "submissions": [
+    {
+      "id": "91e285bd-02a9-4c75-9a13-4f2d79e4eeca",
+      "examId": "exam-demo-1",
+      "studentName": "Pelumi Olaniyan",
+      "studentId": "1234567890",
+      "studentClass": "ss1",
+      "answers": [
+        {
+          "questionId": "q-1",
+          "value": "<main>"
+        },
+        {
+          "questionId": "q-2",
+          "value": "true"
+        },
+        {
+          "questionId": "q-3",
+          "value": "GET"
+        },
+        {
+          "questionId": "q-4",
+          "value": "Application Programming Interface"
+        },
+        {
+          "questionId": "q-5",
+          "value": "false"
+        }
+      ],
+      "score": 9,
+      "maxScore": 9,
+      "percentage": 100,
+      "deviceInfo": {
+        "fingerprint": "36f5b828d6a4c2b9c8179efd8cbf99496b37e81f0ae3c2b963ee5f1812d3d9b3",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Edge",
+        "platform": "Win32",
+        "screenResolution": "1920x1080",
+        "timezone": "Africa/Lagos",
+        "language": "en-US",
+        "ipAddress": "::1"
+      },
+      "submittedAt": "2026-06-10T00:33:56.265Z",
+      "startedAt": "2026-06-10T00:33:01.221Z",
+      "status": "submitted"
+    }
+  ]
 }

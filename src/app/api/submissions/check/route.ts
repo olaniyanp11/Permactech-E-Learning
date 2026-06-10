@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readDb } from "@/lib/db";
+import {
+  findDeviceDuplicate,
+  findStudentDuplicate,
+} from "@/lib/db/repository";
 
 export async function POST(request: NextRequest) {
   try {
     const { examId, studentId, fingerprint } = await request.json();
-    const db = readDb();
 
-    const studentDuplicate = db.submissions.find(
-      (s) =>
-        s.examId === examId &&
-        s.studentId.toLowerCase() === studentId.toLowerCase() &&
-        s.status === "submitted"
-    );
-
-    const deviceDuplicate = db.submissions.find(
-      (s) =>
-        s.examId === examId &&
-        s.deviceInfo.fingerprint === fingerprint &&
-        s.status === "submitted"
-    );
+    const studentDuplicate = await findStudentDuplicate(examId, studentId);
+    const deviceDuplicate = await findDeviceDuplicate(examId, fingerprint);
 
     return NextResponse.json({
       studentDuplicate: Boolean(studentDuplicate),

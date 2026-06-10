@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readDb, writeDb } from "@/lib/db";
+import {
+  createSubmission,
+  findDeviceDuplicate,
+  findStudentDuplicate,
+  getExamById,
+  getQuestionsByExamId,
+} from "@/lib/db/repository";
 import { calculateScore } from "@/lib/scoring";
 import { generateId } from "@/lib/utils";
 import type { Answer, DeviceInfo, Submission } from "@/types";
@@ -35,8 +41,7 @@ export async function POST(request: NextRequest) {
       startedAt: string;
     };
 
-    const db = readDb();
-    const exam = db.exams.find((e) => e.id === examId);
+    const exam = await getExamById(examId);
 
     if (!exam || !exam.isActive) {
       return NextResponse.json({ error: "Exam not found or inactive" }, { status: 404 });
@@ -46,12 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid examination password" }, { status: 401 });
     }
 
-    const studentDuplicate = db.submissions.find(
-      (s) =>
-        s.examId === examId &&
-        s.studentId.toLowerCase() === studentId.toLowerCase() &&
-        s.status === "submitted"
-    );
+    const studentDuplicate = await findStudentDuplicate(examId, studentId);
 
     if (studentDuplicate) {
       return NextResponse.json(
@@ -65,12 +65,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const deviceDuplicate = db.submissions.find(
-      (s) =>
-        s.examId === examId &&
-        s.deviceInfo.fingerprint === deviceInfo.fingerprint &&
-        s.status === "submitted"
-    );
+    const deviceDuplicate = await findDeviceDuplicate(examId, deviceInfo.fingerprint);
 
     if (deviceDuplicate) {
       return NextResponse.json(
@@ -84,7 +79,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const questions = db.questions.filter((q) => q.examId === examId);
+    const questions = await getQuestionsByExamId(examId);
     const scoring = calculateScore(questions, answers);
     const ipAddress = getClientIp(request);
 
@@ -102,8 +97,7 @@ export async function POST(request: NextRequest) {
       status: "submitted",
     };
 
-    db.submissions.push(submission);
-    writeDb(db);
+    await createSubmission(submission);
 
     return NextResponse.json({ submission }, { status: 201 });
   } catch {

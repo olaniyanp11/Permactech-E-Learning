@@ -39,6 +39,20 @@ export function calculateScore(
   return { score, maxScore, percentage };
 }
 
+export function getSubmissionBreakdown(questions: Question[], answers: Answer[]) {
+  return questions.map((question) => {
+    const answer = answers.find((a) => a.questionId === question.id);
+    const earned = answer ? scoreQuestion(question, answer.value) : 0;
+    return {
+      order: question.order,
+      question: question.text,
+      yourAnswer: answer?.value ?? "(No answer)",
+      pointsEarned: earned,
+      maxPoints: question.points,
+    };
+  });
+}
+
 export function rankSubmissions(
   submissions: Submission[]
 ): (Submission & { rank: number })[] {

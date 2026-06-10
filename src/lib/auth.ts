@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { readDb } from "./db";
+import { findAdminByEmail } from "./db/repository";
 import { SESSION_COOKIE, SESSION_MAX_AGE } from "./constants";
 
 const JWT_SECRET = new TextEncoder().encode(
@@ -18,10 +18,7 @@ export async function verifyAdminCredentials(
   email: string,
   password: string
 ): Promise<SessionPayload | null> {
-  const db = readDb();
-  const admin = db.admins.find(
-    (a) => a.email.toLowerCase() === email.toLowerCase()
-  );
+  const admin = await findAdminByEmail(email);
   if (!admin) return null;
 
   const valid = await bcrypt.compare(password, admin.passwordHash);

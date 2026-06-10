@@ -35,8 +35,8 @@ const features = [
   },
   {
     icon: IconDownload,
-    title: "Automated Scoring",
-    description: "Auto-grade objective questions instantly and export full results as CSV.",
+    title: "Result Downloads",
+    description: "Students download their score breakdown as CSV. Admins export full class results.",
   },
 ];
 

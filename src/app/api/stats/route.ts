@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDb } from "@/lib/db";
+import { getDashboardData } from "@/lib/db/repository";
 import { rankSubmissions } from "@/lib/scoring";
 import type { DashboardStats } from "@/types";
 
@@ -20,14 +20,14 @@ function getScoreDistribution(submissions: { percentage: number; status: string 
 }
 
 export async function GET() {
-  const db = readDb();
-  const submitted = db.submissions.filter((s) => s.status === "submitted");
+  const { exams, submissions } = await getDashboardData();
+  const submitted = submissions.filter((s) => s.status === "submitted");
   const uniqueStudents = new Set(submitted.map((s) => s.studentId));
 
   const stats: DashboardStats = {
     totalStudents: uniqueStudents.size,
     totalSubmissions: submitted.length,
-    activeTests: db.exams.filter((e) => e.isActive).length,
+    activeTests: exams.filter((e) => e.isActive).length,
     averageScore:
       submitted.length > 0
         ? submitted.reduce((sum, s) => sum + s.percentage, 0) / submitted.length
@@ -35,14 +35,14 @@ export async function GET() {
     duplicateAttemptsBlocked: 0,
   };
 
-  const ranked = rankSubmissions(db.submissions);
+  const ranked = rankSubmissions(submissions);
   const ranks = Object.fromEntries(ranked.map((s) => [s.id, s.rank]));
 
   return NextResponse.json({
     stats,
-    scoreDistribution: getScoreDistribution(db.submissions),
+    scoreDistribution: getScoreDistribution(submissions),
     recentSubmissions: submitted.slice(-10).reverse(),
     ranks,
-    exams: db.exams,
+    exams,
   });
 }

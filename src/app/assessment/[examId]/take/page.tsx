@@ -123,8 +123,12 @@ export default function TakeExamPage() {
       sessionStorage.setItem(
         "teacheros_confirmation",
         JSON.stringify({
+          submissionId: data.submission.id,
+          studentId: session.studentId,
           studentName: session.fullName,
           examTitle: session.examTitle,
+          score: data.submission.score,
+          maxScore: data.submission.maxScore,
           percentage: data.submission.percentage,
           submittedAt: data.submission.submittedAt,
         })

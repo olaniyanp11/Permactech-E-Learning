@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { readDb, writeDb } from "@/lib/db";
+import { createExam, getAllExams } from "@/lib/db/repository";
 import { generateId } from "@/lib/utils";
 import type { Exam } from "@/types";
 
@@ -10,8 +10,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const db = readDb();
-  return NextResponse.json(db.exams);
+  const exams = await getAllExams();
+  return NextResponse.json(exams);
 }
 
 export async function POST(request: NextRequest) {
@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const db = readDb();
     const now = new Date().toISOString();
 
     const exam: Exam = {
@@ -36,9 +35,7 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     };
 
-    db.exams.push(exam);
-    writeDb(db);
-
+    await createExam(exam);
     return NextResponse.json(exam, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Failed to create exam" }, { status: 500 });

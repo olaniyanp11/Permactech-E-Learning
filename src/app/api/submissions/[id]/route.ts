@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { readDb } from "@/lib/db";
+import {
+  getExamById,
+  getQuestionsByExamId,
+  getSubmissionById,
+} from "@/lib/db/repository";
 
 export async function GET(
   _request: NextRequest,
@@ -12,15 +16,16 @@ export async function GET(
   }
 
   const { id } = await params;
-  const db = readDb();
-  const submission = db.submissions.find((s) => s.id === id);
+  const submission = await getSubmissionById(id);
 
   if (!submission) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const exam = db.exams.find((e) => e.id === submission.examId);
-  const questions = db.questions.filter((q) => q.examId === submission.examId);
+  const [exam, questions] = await Promise.all([
+    getExamById(submission.examId),
+    getQuestionsByExamId(submission.examId),
+  ]);
 
   return NextResponse.json({ submission, exam, questions });
 }

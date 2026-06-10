@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { readDb, writeDb } from "@/lib/db";
+import {
+  deleteExam,
+  getExamById,
+  getQuestionsByExamId,
+  updateExam,
+} from "@/lib/db/repository";
 import type { Question } from "@/types";
 
 function stripAnswers(questions: Question[]): Omit<Question, "correctAnswer">[] {
@@ -13,16 +18,13 @@ export async function GET(
 ) {
   const { id } = await params;
   const session = await getSession();
-  const db = readDb();
-  const exam = db.exams.find((e) => e.id === id);
+  const exam = await getExamById(id);
 
   if (!exam) {
     return NextResponse.json({ error: "Exam not found" }, { status: 404 });
   }
 
-  const questions = db.questions
-    .filter((q) => q.examId === id)
-    .sort((a, b) => a.order - b.order);
+  const questions = await getQuestionsByExamId(id);
 
   return NextResponse.json({
     exam: session
@@ -47,22 +49,14 @@ export async function PUT(
   }
 
   const { id } = await params;
-  const db = readDb();
-  const index = db.exams.findIndex((e) => e.id === id);
+  const body = await request.json();
+  const updated = await updateExam(id, body);
 
-  if (index === -1) {
+  if (!updated) {
     return NextResponse.json({ error: "Exam not found" }, { status: 404 });
   }
 
-  const body = await request.json();
-  db.exams[index] = {
-    ...db.exams[index],
-    ...body,
-    updatedAt: new Date().toISOString(),
-  };
-  writeDb(db);
-
-  return NextResponse.json(db.exams[index]);
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -75,11 +69,11 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const db = readDb();
-  db.exams = db.exams.filter((e) => e.id !== id);
-  db.questions = db.questions.filter((q) => q.examId !== id);
-  db.submissions = db.submissions.filter((s) => s.examId !== id);
-  writeDb(db);
+  const deleted = await deleteExam(id);
+
+  if (!deleted) {
+    return NextResponse.json({ error: "Exam not found" }, { status: 404 });
+  }
 
   return NextResponse.json({ success: true });
 }
