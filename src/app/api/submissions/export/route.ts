@@ -17,8 +17,14 @@ export async function GET(request: NextRequest) {
     a.studentName.localeCompare(b.studentName, undefined, { sensitivity: "base" })
   );
 
-  const headers = ["Student Name", "Student ID", "Score"];
-  const rows = sorted.map((s) => [s.studentName, s.studentId, `${s.score}/${s.maxScore}`]);
+  const headers = ["Student Name", "Student ID", "Score", "Max Score", "Percentage"];
+  const rows = sorted.map((s) => [
+    s.studentName,
+    s.studentId,
+    s.score.toString(),
+    s.maxScore.toString(),
+    `${Math.round(s.percentage)}%`,
+  ]);
 
   const csv = [headers, ...rows]
     .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))

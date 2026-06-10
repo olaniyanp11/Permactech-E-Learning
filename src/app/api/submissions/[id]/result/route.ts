@@ -37,7 +37,8 @@ export async function GET(
     ["Student ID", submission.studentId],
     ["Class", submission.studentClass],
     ["Examination", exam.title],
-    ["Score", `${submission.score} / ${submission.maxScore}`],
+    ["Score", submission.score.toString()],
+    ["Max Score", submission.maxScore.toString()],
     ["Percentage", formatPercent(submission.percentage)],
     ["Submitted", formatDate(submission.submittedAt)],
   ];
