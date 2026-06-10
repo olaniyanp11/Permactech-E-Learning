@@ -91,9 +91,12 @@ export function formatExamDate(iso: string | Date): string {
   const date = parseTimestamp(iso);
   if (!date) return "";
   return date.toLocaleString("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
     timeZone: EXAM_TIMEZONE,
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
     timeZoneName: "short",
   });
 }

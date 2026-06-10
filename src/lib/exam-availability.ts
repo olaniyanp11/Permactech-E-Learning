@@ -16,7 +16,7 @@ export function getExamAvailability(
     if (start && nowMs < start.getTime()) {
       return {
         ok: false,
-        message: `This exam opens on ${formatExamDate(start)}.`,
+        message: `This exam opens on ${formatExamDate(exam.startsAt)}.`,
       };
     }
   }
@@ -26,7 +26,7 @@ export function getExamAvailability(
     if (end && nowMs >= end.getTime()) {
       return {
         ok: false,
-        message: `This exam closed on ${formatExamDate(end)}.`,
+        message: `This exam closed on ${formatExamDate(exam.endsAt)}.`,
       };
     }
   }
