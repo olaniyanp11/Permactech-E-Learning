@@ -1,0 +1,170 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { IconAlertTriangle, IconClipboardCheck } from "@tabler/icons-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { collectDeviceInfo } from "@/lib/fingerprint";
+import { APP_SHORT_NAME } from "@/lib/constants";
+
+export default function AssessmentEntryPage() {
+  const router = useRouter();
+  const [form, setForm] = useState({
+    fullName: "",
+    studentId: "",
+    studentClass: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setWarning("");
+    setLoading(true);
+
+    try {
+      const verifyRes = await fetch("/api/exams/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: form.password }),
+      });
+
+      if (!verifyRes.ok) {
+        setError("Invalid examination password. Please check with your instructor.");
+        setLoading(false);
+        return;
+      }
+
+      const { exam } = await verifyRes.json();
+      const deviceInfo = await collectDeviceInfo();
+
+      const checkRes = await fetch("/api/submissions/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          examId: exam.id,
+          studentId: form.studentId,
+          fingerprint: deviceInfo.fingerprint,
+        }),
+      });
+
+      const checkData = await checkRes.json();
+
+      if (checkData.duplicate) {
+        setWarning(checkData.message);
+        setLoading(false);
+        return;
+      }
+
+      sessionStorage.setItem(
+        "teacheros_session",
+        JSON.stringify({
+          examId: exam.id,
+          examTitle: exam.title,
+          fullName: form.fullName,
+          studentId: form.studentId,
+          studentClass: form.studentClass,
+          password: form.password,
+          durationMinutes: exam.durationMinutes,
+          instructions: exam.instructions,
+          startedAt: new Date().toISOString(),
+        })
+      );
+
+      router.push(`/assessment/${exam.id}/take`);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="flex items-center justify-between border-b border-border px-6 py-5 md:px-10">
+        <Link href="/" className="flex items-center gap-2.5 text-[15px] font-medium">
+          <div className="flex h-[30px] w-[30px] items-center justify-center rounded-md bg-primary">
+            <IconClipboardCheck className="h-[17px] w-[17px] text-primary-foreground" />
+          </div>
+          {APP_SHORT_NAME}
+        </Link>
+        <ThemeToggle />
+      </header>
+
+      <main className="mx-auto max-w-md px-6 py-16">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-medium tracking-tight">Start Assessment</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Enter your details and examination password to begin.
+          </p>
+        </div>
+
+        <Card padding="lg">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Full Name"
+              value={form.fullName}
+              onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+              required
+              autoComplete="name"
+            />
+            <Input
+              label="Student ID"
+              value={form.studentId}
+              onChange={(e) => setForm({ ...form, studentId: e.target.value })}
+              required
+            />
+            <Input
+              label="Class"
+              value={form.studentClass}
+              onChange={(e) => setForm({ ...form, studentClass: e.target.value })}
+              required
+              placeholder="e.g. SS2"
+            />
+            <Input
+              label="Examination Password"
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
+
+            {warning && (
+              <div
+                className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning-bg p-3 text-sm text-warning"
+                role="alert"
+              >
+                <IconAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-medium">Duplicate attempt detected</p>
+                  <p className="mt-1 text-xs opacity-90">{warning}</p>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <p className="text-sm text-destructive" role="alert">
+                {error}
+              </p>
+            )}
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Verifying..." : "Start Examination →"}
+            </Button>
+          </form>
+        </Card>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Only one submission is allowed per student and device.
+        </p>
+      </main>
+    </div>
+  );
+}

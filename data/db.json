@@ -1,0 +1,72 @@
+{
+  "admins": [
+    {
+      "id": "admin-1",
+      "email": "admin@teacheros.edu",
+      "passwordHash": "$2b$10$hkv8/cDz59S42f3ja2TRH..ux/UHJ9/mN2MHyaCTH8QVYiUgmml4a",
+      "name": "Administrator"
+    }
+  ],
+  "exams": [
+    {
+      "id": "exam-demo-1",
+      "title": "Web Development Fundamentals",
+      "instructions": "Read each question carefully. You have 45 minutes to complete this assessment. Multiple choice and true/false questions are auto-graded. Short answer questions will be reviewed manually.",
+      "password": "WEBDEV2026",
+      "durationMinutes": 45,
+      "isActive": true,
+      "createdAt": "2026-06-01T08:00:00.000Z",
+      "updatedAt": "2026-06-01T08:00:00.000Z"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-1",
+      "examId": "exam-demo-1",
+      "type": "mcq",
+      "text": "Which HTML element is used to define the main content of a document?",
+      "options": ["<section>", "<main>", "<article>", "<div>"],
+      "correctAnswer": "<main>",
+      "points": 2,
+      "order": 1
+    },
+    {
+      "id": "q-2",
+      "examId": "exam-demo-1",
+      "type": "true_false",
+      "text": "CSS Flexbox is primarily used for one-dimensional layouts.",
+      "correctAnswer": "true",
+      "points": 1,
+      "order": 2
+    },
+    {
+      "id": "q-3",
+      "examId": "exam-demo-1",
+      "type": "mcq",
+      "text": "Which HTTP method is typically used to retrieve data from a server?",
+      "options": ["POST", "PUT", "GET", "DELETE"],
+      "correctAnswer": "GET",
+      "points": 2,
+      "order": 3
+    },
+    {
+      "id": "q-4",
+      "examId": "exam-demo-1",
+      "type": "short_answer",
+      "text": "What does API stand for in web development?",
+      "correctAnswer": "Application Programming Interface",
+      "points": 3,
+      "order": 4
+    },
+    {
+      "id": "q-5",
+      "examId": "exam-demo-1",
+      "type": "true_false",
+      "text": "JavaScript and Java are the same programming language.",
+      "correctAnswer": "false",
+      "points": 1,
+      "order": 5
+    }
+  ],
+  "submissions": []
+}
