@@ -14,6 +14,7 @@ export const graphicDesignExam: Exam = {
   isActive: true,
   startsAt: null,
   endsAt: null,
+  allowedStudentIds: null,
   createdAt: "2026-06-01T10:00:00.000Z",
   updatedAt: "2026-06-01T10:00:00.000Z",
 };

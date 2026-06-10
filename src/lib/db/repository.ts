@@ -20,6 +20,7 @@ function mapExam(row: typeof exams.$inferSelect): Exam {
     isActive: row.isActive,
     startsAt: row.startsAt ?? null,
     endsAt: row.endsAt ?? null,
+    allowedStudentIds: row.allowedStudentIds ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

@@ -30,7 +30,10 @@ export default function AssessmentEntryPage() {
       const verifyRes = await fetch("/api/exams/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: form.password }),
+        body: JSON.stringify({
+          password: form.password,
+          studentId: form.studentId,
+        }),
       });
 
       const verifyData = await verifyRes.json();
@@ -130,7 +133,7 @@ export default function AssessmentEntryPage() {
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Only one submission counts per Student ID (e.g. UPS2026001–UPS2026025).
+          Use the Student ID assigned to you. Only one submission counts per ID.
         </p>
       </main>
     </div>

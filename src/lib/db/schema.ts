@@ -26,6 +26,7 @@ export const exams = pgTable("exams", {
   isActive: boolean("is_active").notNull().default(true),
   startsAt: timestamp("starts_at", { withTimezone: true, mode: "string" }),
   endsAt: timestamp("ends_at", { withTimezone: true, mode: "string" }),
+  allowedStudentIds: jsonb("allowed_student_ids").$type<string[]>(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull(),
 });

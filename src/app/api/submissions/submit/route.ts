@@ -7,6 +7,7 @@ import {
 } from "@/lib/db/repository";
 import { getExamAvailability } from "@/lib/exam-availability";
 import { calculateScore } from "@/lib/scoring";
+import { isStudentIdAllowed, normalizeStudentId } from "@/lib/student-ids";
 import { generateId } from "@/lib/utils";
 import type { Answer, DeviceInfo, Submission } from "@/types";
 
@@ -56,7 +57,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: availability.message }, { status: 403 });
     }
 
-    const normalizedStudentId = studentId.trim();
+    const normalizedStudentId = normalizeStudentId(studentId);
+
+    if (!isStudentIdAllowed(normalizedStudentId, exam.allowedStudentIds)) {
+      return NextResponse.json(
+        { error: "This Student ID is not on the allowed list for this exam." },
+        { status: 403 }
+      );
+    }
+
     const studentDuplicate = await findStudentDuplicate(examId, normalizedStudentId);
 
     if (studentDuplicate) {

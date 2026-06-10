@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { parseStudentIdList } from "@/lib/student-ids";
 import { fromDatetimeLocalValue } from "@/lib/utils";
 
 export default function NewExamPage() {
@@ -20,6 +21,7 @@ export default function NewExamPage() {
     isActive: true,
     startsAt: "",
     endsAt: "",
+    allowedStudentIds: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -38,6 +40,10 @@ export default function NewExamPage() {
         isActive: form.isActive,
         startsAt: fromDatetimeLocalValue(form.startsAt),
         endsAt: fromDatetimeLocalValue(form.endsAt),
+        allowedStudentIds: (() => {
+          const ids = parseStudentIdList(form.allowedStudentIds);
+          return ids.length ? ids : null;
+        })(),
       }),
     });
 
@@ -110,6 +116,21 @@ export default function NewExamPage() {
           <p className="text-xs text-muted-foreground">
             Leave blank to allow access anytime while the exam is active.
           </p>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium">
+              Allowed Student IDs (optional)
+            </label>
+            <textarea
+              value={form.allowedStudentIds}
+              onChange={(e) => setForm({ ...form, allowedStudentIds: e.target.value })}
+              rows={8}
+              placeholder={"UPS2026001\nUPS2026002\nUPS2026003"}
+              className="w-full rounded-lg border border-border bg-surface-elevated px-3 py-2.5 font-mono text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              One ID per line. Leave empty to allow any Student ID.
+            </p>
+          </div>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"

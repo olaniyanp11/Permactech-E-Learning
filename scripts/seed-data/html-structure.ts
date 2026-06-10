@@ -1,6 +1,9 @@
+import { generateStudentIdRange } from "../../src/lib/student-ids";
 import type { Exam, Question } from "../../src/types";
 
 const EXAM_ID = "exam-html-structure";
+
+export const htmlAllowedStudentIds = generateStudentIdRange("UPS2026", 1, 25);
 
 export const htmlStructureExam: Exam = {
   id: EXAM_ID,
@@ -14,6 +17,7 @@ export const htmlStructureExam: Exam = {
   isActive: true,
   startsAt: "2026-06-11T11:00:00.000Z", // Thu 12:00 PM (WAT)
   endsAt: "2026-06-12T23:00:00.000Z", // Sat 12:00 AM midnight (WAT)
+  allowedStudentIds: htmlAllowedStudentIds,
   createdAt: "2026-06-01T08:00:00.000Z",
   updatedAt: "2026-06-01T08:00:00.000Z",
 };

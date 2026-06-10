@@ -54,6 +54,9 @@ export default function ExamsPage() {
                   <h2 className="font-medium">{exam.title}</h2>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {exam.durationMinutes} min
+                    {exam.allowedStudentIds?.length
+                      ? ` · ${exam.allowedStudentIds.length} allowed IDs`
+                      : ""}
                   </p>
                   {exam.startsAt && (
                     <p className="mt-1 text-xs text-muted-foreground">

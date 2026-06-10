@@ -8,12 +8,14 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { formatStudentIdList, parseStudentIdList } from "@/lib/student-ids";
 import { formatDate, toDatetimeLocalValue } from "@/lib/utils";
 import type { Exam, Question, QuestionType } from "@/types";
 
 export default function EditExamPage() {
   const { id } = useParams<{ id: string }>();
   const [exam, setExam] = useState<Exam | null>(null);
+  const [allowedIdsText, setAllowedIdsText] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
   const [saving, setSaving] = useState(false);
   const [showQuestionForm, setShowQuestionForm] = useState(false);
@@ -30,6 +32,7 @@ export default function EditExamPage() {
       .then((r) => r.json())
       .then((data) => {
         setExam(data.exam);
+        setAllowedIdsText(formatStudentIdList(data.exam.allowedStudentIds));
         setQuestions(data.questions);
       });
   }, [id]);
@@ -155,6 +158,24 @@ export default function EditExamPage() {
               {exam.endsAt && <>Closes {formatDate(exam.endsAt)}</>}
             </p>
           )}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium">
+              Allowed Student IDs (optional)
+            </label>
+            <textarea
+              value={allowedIdsText}
+              onChange={(e) => setAllowedIdsText(e.target.value)}
+              rows={8}
+              placeholder={"UPS2026001\nUPS2026002\nUPS2026003"}
+              className="w-full rounded-lg border border-border bg-surface-elevated px-3 py-2.5 font-mono text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              One ID per line. Leave empty to allow any Student ID.
+              {allowedIdsText.trim() && (
+                <> · {parseStudentIdList(allowedIdsText).length} ID(s) listed</>
+              )}
+            </p>
+          </div>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -165,7 +186,13 @@ export default function EditExamPage() {
             Active
           </label>
           <Button
-            onClick={() => saveExam(exam)}
+            onClick={() => {
+              const allowedStudentIds = parseStudentIdList(allowedIdsText);
+              saveExam({
+                ...exam,
+                allowedStudentIds: allowedStudentIds.length ? allowedStudentIds : null,
+              });
+            }}
             disabled={saving}
           >
             {saving ? "Saving..." : "Save Settings"}

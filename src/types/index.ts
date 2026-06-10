@@ -20,6 +20,7 @@ export interface Exam {
   isActive: boolean;
   startsAt: string | null;
   endsAt: string | null;
+  allowedStudentIds: string[] | null;
   createdAt: string;
   updatedAt: string;
 }

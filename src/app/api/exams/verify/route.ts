@@ -4,10 +4,11 @@ import {
   findActiveExamByPassword,
 } from "@/lib/db/repository";
 import { getExamAvailability } from "@/lib/exam-availability";
+import { isStudentIdAllowed, normalizeStudentId } from "@/lib/student-ids";
 
 export async function POST(request: NextRequest) {
   try {
-    const { password } = await request.json();
+    const { password, studentId } = await request.json();
     const exam = await findActiveExamByPassword(password);
 
     if (!exam) {
@@ -17,6 +18,19 @@ export async function POST(request: NextRequest) {
     const availability = getExamAvailability(exam);
     if (!availability.ok) {
       return NextResponse.json({ error: availability.message }, { status: 403 });
+    }
+
+    if (exam.allowedStudentIds?.length) {
+      if (!studentId?.trim()) {
+        return NextResponse.json({ error: "Student ID is required." }, { status: 400 });
+      }
+      const normalizedStudentId = normalizeStudentId(studentId);
+      if (!isStudentIdAllowed(normalizedStudentId, exam.allowedStudentIds)) {
+        return NextResponse.json(
+          { error: "This Student ID is not on the allowed list for this exam." },
+          { status: 403 }
+        );
+      }
     }
 
     const questionCount = await countQuestionsByExamId(exam.id);

@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
       isActive: body.isActive ?? true,
       startsAt: body.startsAt ?? null,
       endsAt: body.endsAt ?? null,
+      allowedStudentIds: body.allowedStudentIds ?? null,
       createdAt: now,
       updatedAt: now,
     };
