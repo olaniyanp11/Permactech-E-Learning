@@ -1,10 +1,37 @@
+import { EXAM_TIMEZONE } from "./constants";
+
 export function cn(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
+export function parseTimestamp(value: string | Date | null | undefined): Date | null {
+  if (value == null) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const normalized =
+    trimmed.includes(" ") && !trimmed.includes("T")
+      ? trimmed.replace(" ", "T")
+      : trimmed;
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function normalizeTimestamp(
+  value: string | Date | null | undefined
+): string | null {
+  const date = parseTimestamp(value);
+  return date ? date.toISOString() : null;
+}
+
 export function toDatetimeLocalValue(iso: string | null): string {
   if (!iso) return "";
-  const date = new Date(iso);
+  const date = parseTimestamp(iso);
+  if (!date) return "";
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -14,14 +41,26 @@ export function toDatetimeLocalValue(iso: string | null): string {
 }
 
 export function fromDatetimeLocalValue(value: string): string | null {
-  if (!value.trim()) return null;
-  return new Date(value).toISOString();
+  return normalizeTimestamp(value);
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString("en-US", {
+  const date = parseTimestamp(iso);
+  if (!date) return "";
+  return date.toLocaleString("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
+  });
+}
+
+export function formatExamDate(iso: string | Date): string {
+  const date = parseTimestamp(iso);
+  if (!date) return "";
+  return date.toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: EXAM_TIMEZONE,
+    timeZoneName: "short",
   });
 }
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { createExam, getAllExams } from "@/lib/db/repository";
-import { generateId } from "@/lib/utils";
+import { generateId, normalizeTimestamp } from "@/lib/utils";
 import type { Exam } from "@/types";
 
 export async function GET() {
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
       password: body.password,
       durationMinutes: Number(body.durationMinutes) || 60,
       isActive: body.isActive ?? true,
-      startsAt: body.startsAt ?? null,
-      endsAt: body.endsAt ?? null,
+      startsAt: normalizeTimestamp(body.startsAt),
+      endsAt: normalizeTimestamp(body.endsAt),
       allowedStudentIds: body.allowedStudentIds ?? null,
       createdAt: now,
       updatedAt: now,

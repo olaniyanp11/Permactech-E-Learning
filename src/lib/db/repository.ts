@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { normalizeTimestamp } from "@/lib/utils";
 import { getDb } from "./index";
 import { admins, exams, questions, submissions } from "./schema";
 import type {
@@ -18,8 +19,8 @@ function mapExam(row: typeof exams.$inferSelect): Exam {
     password: row.password,
     durationMinutes: row.durationMinutes,
     isActive: row.isActive,
-    startsAt: row.startsAt ?? null,
-    endsAt: row.endsAt ?? null,
+    startsAt: normalizeTimestamp(row.startsAt),
+    endsAt: normalizeTimestamp(row.endsAt),
     allowedStudentIds: row.allowedStudentIds ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -87,9 +88,19 @@ export async function getExamById(id: string): Promise<Exam | null> {
 
 export async function updateExam(id: string, data: Partial<Exam>): Promise<Exam | null> {
   const db = getDb();
+  const updates: Partial<Exam> & { updatedAt: string } = {
+    ...data,
+    updatedAt: new Date().toISOString(),
+  };
+  if ("startsAt" in data) {
+    updates.startsAt = normalizeTimestamp(data.startsAt);
+  }
+  if ("endsAt" in data) {
+    updates.endsAt = normalizeTimestamp(data.endsAt);
+  }
   const [row] = await db
     .update(exams)
-    .set({ ...data, updatedAt: new Date().toISOString() })
+    .set(updates)
     .where(eq(exams.id, id))
     .returning();
   return row ? mapExam(row) : null;

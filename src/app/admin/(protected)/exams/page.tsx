@@ -6,7 +6,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { formatDate } from "@/lib/utils";
+import { formatExamDate } from "@/lib/utils";
 import type { Exam } from "@/types";
 
 export default function ExamsPage() {
@@ -60,8 +60,8 @@ export default function ExamsPage() {
                   </p>
                   {exam.startsAt && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Opens {formatDate(exam.startsAt)}
-                      {exam.endsAt ? ` · Closes ${formatDate(exam.endsAt)}` : ""}
+                      Opens {formatExamDate(exam.startsAt)}
+                      {exam.endsAt ? ` · Closes ${formatExamDate(exam.endsAt)}` : ""}
                     </p>
                   )}
                 </div>

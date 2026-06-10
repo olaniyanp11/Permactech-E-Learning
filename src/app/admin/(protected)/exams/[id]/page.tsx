@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { formatStudentIdList, parseStudentIdList } from "@/lib/student-ids";
-import { formatDate, toDatetimeLocalValue } from "@/lib/utils";
+import { formatExamDate, fromDatetimeLocalValue, toDatetimeLocalValue } from "@/lib/utils";
 import type { Exam, Question, QuestionType } from "@/types";
 
 export default function EditExamPage() {
@@ -135,7 +135,7 @@ export default function EditExamPage() {
               onChange={(e) =>
                 setExam({
                   ...exam,
-                  startsAt: e.target.value ? new Date(e.target.value).toISOString() : null,
+                  startsAt: fromDatetimeLocalValue(e.target.value),
                 })
               }
             />
@@ -146,16 +146,16 @@ export default function EditExamPage() {
               onChange={(e) =>
                 setExam({
                   ...exam,
-                  endsAt: e.target.value ? new Date(e.target.value).toISOString() : null,
+                  endsAt: fromDatetimeLocalValue(e.target.value),
                 })
               }
             />
           </div>
           {(exam.startsAt || exam.endsAt) && (
             <p className="text-xs text-muted-foreground">
-              {exam.startsAt && <>Opens {formatDate(exam.startsAt)}</>}
+              {exam.startsAt && <>Opens {formatExamDate(exam.startsAt)}</>}
               {exam.startsAt && exam.endsAt && " · "}
-              {exam.endsAt && <>Closes {formatDate(exam.endsAt)}</>}
+              {exam.endsAt && <>Closes {formatExamDate(exam.endsAt)}</>}
             </p>
           )}
           <div>
